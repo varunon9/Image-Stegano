@@ -5,9 +5,12 @@
  */
 package imagestegano;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,6 +18,7 @@ import javax.swing.JFileChooser;
  */
 public class ImageStegano extends javax.swing.JFrame {
 
+    BufferedImage originalImage = null;
     /**
      * Creates new form ImageStegano
      */
@@ -32,6 +36,11 @@ public class ImageStegano extends javax.swing.JFrame {
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
+        nameLabel = new javax.swing.JLabel();
+        previousButton = new javax.swing.JButton();
+        nextButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        imageLabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
@@ -44,8 +53,18 @@ public class ImageStegano extends javax.swing.JFrame {
         helpMenu = new javax.swing.JMenu();
 
         fileChooser.setDialogTitle("Choose an image");
+        fileChooser.setFileFilter(new ImageFilter());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        nameLabel.setText("Open an Image using Ctrl + O or File menu");
+
+        previousButton.setText("Previous");
+
+        nextButton.setText("Next");
+
+        imageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jScrollPane1.setViewportView(imageLabel);
 
         fileMenu.setText("File");
         fileMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -87,7 +106,6 @@ public class ImageStegano extends javax.swing.JFrame {
         jMenuBar1.add(colourMapMenu);
 
         hideDataMenu.setText("Hide Data");
-        hideDataMenu.setActionCommand("Hide Data");
         jMenuBar1.add(hideDataMenu);
 
         helpMenu.setText("Help");
@@ -99,11 +117,29 @@ public class ImageStegano extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 601, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(113, 113, 113)
+                .addComponent(previousButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(nextButton)
+                .addGap(143, 143, 143))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 568, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 349, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(previousButton)
+                    .addComponent(nextButton)))
         );
 
         pack();
@@ -117,10 +153,19 @@ public class ImageStegano extends javax.swing.JFrame {
         int returnVal = fileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
+            String name = file.getName();
+            String path = file.getAbsolutePath();
             try {
-                System.out.println(file.getAbsolutePath());
-            } catch (Exception ex) {
-                System.out.println("problem accessing file" + file.getAbsolutePath());
+                ImageFilter imageFilter = new ImageFilter();
+                if (imageFilter.isImage(name)) {
+                    originalImage = ImageIO.read(file);
+                    imageLabel.setIcon(new ImageIcon(originalImage));
+                } else {
+                    JOptionPane.showMessageDialog(null, 
+                            "Please select an image");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         } else {
             System.out.println("File access cancelled by user.");
@@ -165,6 +210,7 @@ public class ImageStegano extends javax.swing.JFrame {
             }
         });
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu analyzeMenu;
@@ -175,8 +221,13 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenu hideDataMenu;
     private javax.swing.JMenu histogramMenu;
+    private javax.swing.JLabel imageLabel;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel nameLabel;
+    private javax.swing.JButton nextButton;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JButton previousButton;
     private javax.swing.JMenuItem saveAsMenuItem;
     // End of variables declaration//GEN-END:variables
 }
