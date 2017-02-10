@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -38,5 +40,40 @@ public class ImageUtility {
         WritableRaster raster = userSpaceImage.getRaster();
         DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
         return buffer.getData();
+    }
+    
+    public String getNewFileName(String name) {
+        int dotIndex = name.lastIndexOf('.');
+        String extension = name.substring(dotIndex + 1);
+        int endIndex = dotIndex - 1;
+        String nameWithoutExtension = name.substring(0, endIndex);
+        String newName = nameWithoutExtension + "-steg." + extension;
+        return newName;
+    }
+    
+    public boolean isImage(String name) {
+        String extension = name.substring(name.lastIndexOf('.') + 1);
+        extension = extension.toLowerCase();
+        if (extension.equals("png") || extension.equals("gif")
+                || extension.equals("jpeg") || extension.equals("jpg")
+                || extension.equals("bmp") || extension.equals("tif")
+                || extension.equals("tiff")) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * @param image image-file to save
+     * @param file to save image to
+     */
+    public void saveImage(BufferedImage image, File file) {
+        String name = file.getName();
+        String extension = name.substring(name.lastIndexOf('.') + 1);
+        try {
+            ImageIO.write(image, extension, file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }

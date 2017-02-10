@@ -25,11 +25,21 @@ public class ImageStegano extends javax.swing.JFrame {
     BufferedImage currentImage;
     ImageUtility imageUtility;
     BPCS bitPlane;
+    File openedFile;
     
     //pixel size of original image
     int pixelSize;
     
-    //index used for bit plane (BPCS), range 0-31 in format ARGB
+    /**
+     * value of bpcsIndex - 
+     * [-8, -1] all plane where -8 is MSB and -1 is LSB
+     * [0, 7] blue plane where 0 is MSB and 7 is LSB 
+     * [8, 15] green plane where 8 is MSB and 15 is LSB 
+     * [16, 23] red plane
+     * if alpha channel is present then [0, 7] alpha plane, 0 is MSB and
+     * all other planes is shifted by one byte
+     * color model is ABGR or BGR (in byte array)
+     */
     int bpcsIndex;
     
     //negative index will be used for all plane BPCS as well as some other 
@@ -90,6 +100,11 @@ public class ImageStegano extends javax.swing.JFrame {
                 previousButtonActionPerformed(evt);
             }
         });
+        previousButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                previousButtonKeyReleased(evt);
+            }
+        });
 
         nextButton.setText("Next");
         nextButton.addActionListener(new java.awt.event.ActionListener() {
@@ -97,16 +112,16 @@ public class ImageStegano extends javax.swing.JFrame {
                 nextButtonActionPerformed(evt);
             }
         });
+        nextButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                nextButtonKeyReleased(evt);
+            }
+        });
 
         imageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jScrollPane1.setViewportView(imageLabel);
 
         fileMenu.setText("File");
-        fileMenu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileMenuActionPerformed(evt);
-            }
-        });
 
         openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         openMenuItem.setText("Open");
@@ -119,6 +134,11 @@ public class ImageStegano extends javax.swing.JFrame {
 
         saveAsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         saveAsMenuItem.setText("Save As");
+        saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveAsMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(saveAsMenuItem);
 
         exitMenuItem.setText("Exit");
@@ -180,25 +200,24 @@ public class ImageStegano extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void fileMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fileMenuActionPerformed
 
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
+        fileChooser.setDialogTitle("Select an image");
         int returnVal = fileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            String name = file.getName();
+            openedFile = fileChooser.getSelectedFile();
+            String name = openedFile.getName();
             try {
                 ImageFilter imageFilter = new ImageFilter();
                 if (imageFilter.isImage(name)) {
-                    originalImage = ImageIO.read(file);
+                    originalImage = ImageIO.read(openedFile);
                     ColorModel colorModel = originalImage.getColorModel();
                     pixelSize = colorModel.getPixelSize();
-                    bpcsIndex = pixelSize;
+                    bpcsIndex = -9;
                     System.out.println("Pixel size: " + pixelSize);
                     imageLabel.setIcon(new ImageIcon(originalImage));
-                    nameLabel.setText("Normal Image. Use --> and <-- key to navigate.");
+                    nameLabel.setText("Normal Image. Use --> " + 
+                            "and <-- key to navigate.");
                 } else {
                     JOptionPane.showMessageDialog(null, 
                             "Please select an image");
@@ -215,21 +234,65 @@ public class ImageStegano extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
-    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
+    private void previousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousButtonActionPerformed
         if (bpcsIndex <= minIndex) {
             bpcsIndex = pixelSize;
         }
         bpcsIndex--;
         manipulateImage();
-    }//GEN-LAST:event_nextButtonActionPerformed
+    }//GEN-LAST:event_previousButtonActionPerformed
 
-    private void previousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousButtonActionPerformed
+    private void previousButtonKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_previousButtonKeyReleased
+        int keyCode = evt.getKeyCode();
+        if (keyCode == 39) {
+            nextButton.doClick();
+        } else if (keyCode == 37) {
+            previousButton.doClick();
+        }
+    }//GEN-LAST:event_previousButtonKeyReleased
+
+    private void nextButtonKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nextButtonKeyReleased
+        int keyCode = evt.getKeyCode();
+        if (keyCode == 39) {
+            nextButton.doClick();
+        } else if (keyCode == 37) {
+            previousButton.doClick();
+        }
+    }//GEN-LAST:event_nextButtonKeyReleased
+
+    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
         if (bpcsIndex >= pixelSize - 1) {
             bpcsIndex = minIndex - 1;
         }
         bpcsIndex++;
         manipulateImage();
-    }//GEN-LAST:event_previousButtonActionPerformed
+    }//GEN-LAST:event_nextButtonActionPerformed
+
+    private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
+        if (currentImage == null) {
+            return;
+        }
+        fileChooser.setDialogTitle("Choose a location");
+        String oldFileName = openedFile.getName();
+        String newFileName = imageUtility.getNewFileName(oldFileName);
+        String path = openedFile.getAbsolutePath();
+        path = path.substring(0, path.lastIndexOf(File.separator) + 1);
+        File file = new File(path + newFileName);
+        fileChooser.setSelectedFile(file);
+        int returnVal = fileChooser.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            file = fileChooser.getSelectedFile();
+            String name = file.getName();
+            if (imageUtility.isImage(name)) {
+                imageUtility.saveImage(currentImage, file);
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid file name");
+            }
+            
+        } else {
+            System.out.println("File access cancelled by user.");
+        }
+    }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -271,6 +334,26 @@ public class ImageStegano extends javax.swing.JFrame {
             currentImage = imageUtility.copyImage(originalImage);
             bitPlane.singlePlaneBPCS(currentImage, bpcsIndex, pixelSize);
             imageLabel.setIcon(new ImageIcon(currentImage));
+            int bitPlaneCode = bpcsIndex / 8;
+            String bitPlaneName = "Alpha";
+            
+            //checking if alpha channel is absent
+            if (pixelSize <= 24) {
+                bitPlaneCode += 1;
+            }
+            switch(bitPlaneCode) {
+                case 1: 
+                    bitPlaneName = "Blue";
+                    break;
+                case 2:
+                    bitPlaneName = "Green";
+                    break;
+                case 3:
+                    bitPlaneName = "Red";
+                    break;
+            }
+            nameLabel.setText(bitPlaneName + " plane: " + 
+                    (7 - (bpcsIndex % 8)) + "th bit");
         }
     }
     
@@ -285,9 +368,9 @@ public class ImageStegano extends javax.swing.JFrame {
     private void applyAllPlaneBPCS() {
         if (originalImage != null) {
             currentImage = imageUtility.copyImage(originalImage);
-            int newIndex = (bpcsIndex * -1) - 1;
-            bitPlane.allPlaneBPCS(currentImage, newIndex, pixelSize);
+            bitPlane.allPlaneBPCS(currentImage, bpcsIndex, pixelSize);
             imageLabel.setIcon(new ImageIcon(currentImage));
+            nameLabel.setText("All plane: " + ((bpcsIndex * -1) - 1) + "th bit");
         }
     }
     
