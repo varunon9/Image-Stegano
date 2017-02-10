@@ -6,11 +6,14 @@
 package imagestegano;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import steganography.BPCS;
+import utility.ImageUtility;
 
 /**
  *
@@ -18,11 +21,33 @@ import javax.swing.JOptionPane;
  */
 public class ImageStegano extends javax.swing.JFrame {
 
-    BufferedImage originalImage = null;
+    BufferedImage originalImage;
+    BufferedImage currentImage;
+    ImageUtility imageUtility;
+    BPCS bitPlane;
+    
+    //pixel size of original image
+    int pixelSize;
+    
+    //index used for bit plane (BPCS), range 0-31 in format ARGB
+    int bpcsIndex;
+    
+    //negative index will be used for all plane BPCS as well as some other 
+    //modification
+    int minIndex;
+    
     /**
      * Creates new form ImageStegano
      */
     public ImageStegano() {
+        originalImage = null;
+        currentImage = null;
+        imageUtility = new ImageUtility();
+        bitPlane = new BPCS();
+        
+        //[-1, -8] all plane BPCS
+        minIndex = -8;
+        
         initComponents();
     }
 
@@ -60,8 +85,18 @@ public class ImageStegano extends javax.swing.JFrame {
         nameLabel.setText("Open an Image using Ctrl + O or File menu");
 
         previousButton.setText("Previous");
+        previousButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                previousButtonActionPerformed(evt);
+            }
+        });
 
         nextButton.setText("Next");
+        nextButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextButtonActionPerformed(evt);
+            }
+        });
 
         imageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jScrollPane1.setViewportView(imageLabel);
@@ -154,12 +189,16 @@ public class ImageStegano extends javax.swing.JFrame {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             String name = file.getName();
-            String path = file.getAbsolutePath();
             try {
                 ImageFilter imageFilter = new ImageFilter();
                 if (imageFilter.isImage(name)) {
                     originalImage = ImageIO.read(file);
+                    ColorModel colorModel = originalImage.getColorModel();
+                    pixelSize = colorModel.getPixelSize();
+                    bpcsIndex = pixelSize;
+                    System.out.println("Pixel size: " + pixelSize);
                     imageLabel.setIcon(new ImageIcon(originalImage));
+                    nameLabel.setText("Normal Image. Use --> and <-- key to navigate.");
                 } else {
                     JOptionPane.showMessageDialog(null, 
                             "Please select an image");
@@ -175,6 +214,22 @@ public class ImageStegano extends javax.swing.JFrame {
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
+
+    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
+        if (bpcsIndex <= minIndex) {
+            bpcsIndex = pixelSize;
+        }
+        bpcsIndex--;
+        manipulateImage();
+    }//GEN-LAST:event_nextButtonActionPerformed
+
+    private void previousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousButtonActionPerformed
+        if (bpcsIndex >= pixelSize - 1) {
+            bpcsIndex = minIndex - 1;
+        }
+        bpcsIndex++;
+        manipulateImage();
+    }//GEN-LAST:event_previousButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -209,6 +264,31 @@ public class ImageStegano extends javax.swing.JFrame {
                 new ImageStegano().setVisible(true);
             }
         });
+    }
+    
+    private void applySinglePlaneBPCS() {
+        if (originalImage != null) {
+            currentImage = imageUtility.copyImage(originalImage);
+            bitPlane.singlePlaneBPCS(currentImage, bpcsIndex, pixelSize);
+            imageLabel.setIcon(new ImageIcon(currentImage));
+        }
+    }
+    
+    private void manipulateImage() {
+        if (bpcsIndex >= 0) {
+            applySinglePlaneBPCS();
+        } else if (bpcsIndex >= minIndex) {
+            applyAllPlaneBPCS();
+        }
+    }
+    
+    private void applyAllPlaneBPCS() {
+        if (originalImage != null) {
+            currentImage = imageUtility.copyImage(originalImage);
+            int newIndex = (bpcsIndex * -1) - 1;
+            bitPlane.allPlaneBPCS(currentImage, newIndex, pixelSize);
+            imageLabel.setIcon(new ImageIcon(currentImage));
+        }
     }
     
 
