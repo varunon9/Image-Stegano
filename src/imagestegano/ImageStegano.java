@@ -54,6 +54,7 @@ public class ImageStegano extends javax.swing.JFrame {
         currentImage = null;
         imageUtility = new ImageUtility();
         bitPlane = new BPCS();
+        bpcsIndex = -9;
         
         //[-1, -8] all plane BPCS
         minIndex = -8;
@@ -211,10 +212,15 @@ public class ImageStegano extends javax.swing.JFrame {
                 ImageFilter imageFilter = new ImageFilter();
                 if (imageFilter.isImage(name)) {
                     originalImage = ImageIO.read(openedFile);
-                    ColorModel colorModel = originalImage.getColorModel();
-                    pixelSize = colorModel.getPixelSize();
-                    bpcsIndex = -9;
-                    System.out.println("Pixel size: " + pixelSize);
+                    
+                    // will initialize pixelSize variable
+                    printImageInfo(originalImage);
+                    
+                    // converting original image to suitable type
+                    originalImage = imageUtility.convertImage(originalImage);
+                    
+                    // will ovverride pixelSize variable
+                    printImageInfo(originalImage);
                     imageLabel.setIcon(new ImageIcon(originalImage));
                     nameLabel.setText("Normal Image. Use --> " + 
                             "and <-- key to navigate.");
@@ -337,7 +343,7 @@ public class ImageStegano extends javax.swing.JFrame {
             int bitPlaneCode = bpcsIndex / 8;
             String bitPlaneName = "Alpha";
             
-            //checking if alpha channel is absent
+            // checking if alpha channel is absent
             if (pixelSize <= 24) {
                 bitPlaneCode += 1;
             }
@@ -372,6 +378,15 @@ public class ImageStegano extends javax.swing.JFrame {
             imageLabel.setIcon(new ImageIcon(currentImage));
             nameLabel.setText("All plane: " + ((bpcsIndex * -1) - 1) + "th bit");
         }
+    }
+    
+    private void printImageInfo(BufferedImage image) {
+        System.out.println("Image Type: " + image.getType());
+        ColorModel colorModel = image.getColorModel();
+        pixelSize = colorModel.getPixelSize();
+        System.out.println("Pixel size: " + pixelSize);
+        System.out.println("Alpha channel present: "
+                + colorModel.hasAlpha());
     }
     
 

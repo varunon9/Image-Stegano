@@ -20,6 +20,39 @@ import javax.imageio.ImageIO;
 public class ImageUtility {
     
     /**
+     * this method convert supplied image to suitable type
+     * it is needed because we need bytes of array so TYPE_INT images must be
+     * converted to BYTE_BGR or so
+     * @param originalImage loaded from file-chooser
+     * @return 
+     */
+    
+    public BufferedImage convertImage(BufferedImage originalImage) {
+        int newImageType = originalImage.getType();
+        
+        /**
+         * Converting int to byte since byte array is needed later to modify 
+         * the image
+         */
+        if (newImageType == BufferedImage.TYPE_INT_RGB
+                || newImageType == BufferedImage.TYPE_INT_BGR) {
+            newImageType = BufferedImage.TYPE_3BYTE_BGR;
+        } else if (newImageType == BufferedImage.TYPE_INT_ARGB) {
+            newImageType = BufferedImage.TYPE_4BYTE_ABGR;
+        } else if (newImageType == BufferedImage.TYPE_INT_ARGB_PRE) {
+            newImageType = BufferedImage.TYPE_4BYTE_ABGR_PRE;
+        }
+        BufferedImage newImage = new BufferedImage(originalImage.getWidth(), 
+                originalImage.getHeight(), newImageType);
+        Graphics g = newImage.getGraphics();
+        g.drawImage(originalImage, 0, 0, null);
+        g.dispose();
+        return newImage;
+    }
+    
+    /**
+     * we don't want to alter original image (actually converted image)
+     * since we need this each time for reference
      * @param coverImage original carrier/cover image
      * @return a copy of supplied image
      */

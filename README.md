@@ -1,5 +1,5 @@
 # Image-Stegano 
-#### A tool to analyze and implement various image steganography methods
+#### A tool to analyze and implement various image steganography methods (under development)
 
 "Steganography is the art and science of communicating in a way which hides the existence of the
 communication. In contrast to Cryptography, where the enemy is allowed to detect, intercept and modify
@@ -17,3 +17,41 @@ video-audio synchronization, companies’ safe circulation of secret data, TV br
 (for instance a unique ID can be embedded into an image to analyze the network traffic of particular
 users). In steganography many different carrier file formats can be used, but digital images are the most
 popular because of their frequency on the Internet.
+
+#### Scope of the Tool:
+
+Image-Stegano implements following steganographic methods-
+
+1. 1 bit, 2 bits, 3 bits and 4 bits LSB
+2. 24 bits plane (Red, Green, Blue) and 32 bits plane (Red, Green, Blue, Alpha) BPCS
+3. Bitwise XOR Implementation between LSB and payload
+4. Compression and Encryption of payload 
+5. Steganography Based on File Format
+
+This tool also provides following additional options-
+
+1. Analysis of image using inversion, bit masking and different colour maps
+2. Presenting histogram and altering threshold 
+3. Providing metadata about the image
+4. Detecting size anomaly for .bmp files
+
+#### Working Demo of Bit Plane Steganography (BPCS)
+
+|  |  |
+| --- | --- |
+|![Opening Image] (./screenshots/openingImage.png) | ![Selected Image] (./screenshots/openedImage.png)|
+|![All Plane 6th bit] (./screenshots/allPlane6.png) | ![Hidden Image] (./screenshots/bpcsHidden.png)|
+
+In the above screenshots, an image was hidden in bit 0 of carrier image. 
+
+#### How to start tool
+
+1. Clone this Repository / Download zip 
+2. Open terminal (Ctrl + Alt + T)
+3. Type `cd /path/to/repository/ImageStegano/dist/` 
+4. Type `java -jar ImageStegano.jar`
+
+### How to deploy the project
+
+This tool is being developed in NetBeans IDE. You can import project form zip file.
+
