@@ -37,12 +37,10 @@ This tool also provides following additional options-
 
 #### Working Demo of Bit Plane Steganography (BPCS)
 
-|  |  |
-| --- | --- |
-|![Opening Image] (./screenshots/openingImage.png) | ![Selected Image] (./screenshots/openedImage.png)|
-|![All Plane 6th bit] (./screenshots/allPlane6.png) | ![Hidden Image] (./screenshots/bpcsHidden.png)|
-
-In the above screenshots, an image was hidden in bit 0 of carrier image. 
+1. Choose an image to open: ![Opening Image] (./screenshots/openingImage.png)
+2. Original Image: ![Selected Image] (./screenshots/openedImage.png)
+3. 6th bit plane (RGB) ![All Plane 6th bit] (./screenshots/allPlane6.png)
+4. Hidden image in 0th bit plane ![Hidden Image] (./screenshots/bpcsHidden.png)|
 
 #### How to start tool
 
