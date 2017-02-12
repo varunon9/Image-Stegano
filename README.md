@@ -1,5 +1,5 @@
 # Image-Stegano 
-#### A tool to analyze and implement various image steganography methods (under development)
+#### A tool to analyze and implement various image steganography methods in Java (under development)
 
 "Steganography is the art and science of communicating in a way which hides the existence of the
 communication. In contrast to Cryptography, where the enemy is allowed to detect, intercept and modify
@@ -40,7 +40,7 @@ This tool also provides following additional options-
 1. Choose an image to open: ![Opening Image] (./screenshots/openingImage.png)
 2. Original Image: ![Selected Image] (./screenshots/openedImage.png)
 3. 6th bit plane (RGB) ![All Plane 6th bit] (./screenshots/allPlane6.png)
-4. Hidden image in 0th bit plane ![Hidden Image] (./screenshots/bpcsHidden.png)|
+4. Hidden image in 0th bit plane ![Hidden Image] (./screenshots/bpcsHidden.png)
 
 #### How to start tool
 

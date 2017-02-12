@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import steganography.BPCS;
+import steganography.BitwiseXOR;
 import utility.ImageUtility;
 
 /**
@@ -26,8 +27,9 @@ public class ImageStegano extends javax.swing.JFrame {
     ImageUtility imageUtility;
     BPCS bitPlane;
     File openedFile;
+    BitwiseXOR bitwiseXOR;
     
-    //pixel size of original image
+    // pixel size of original image
     int pixelSize;
     
     /**
@@ -42,9 +44,15 @@ public class ImageStegano extends javax.swing.JFrame {
      */
     int bpcsIndex;
     
-    //negative index will be used for all plane BPCS as well as some other 
-    //modification
-    int minIndex;
+    // negative index will be used for all plane BPCS 
+    int minBPCSIndex;
+    
+    // value of colourMapIndex - [0, 7] for 8 different colour maps
+    int colourMapIndex;
+    
+    // value of bitwiseXORIndex [1, 28] (4 * 4 + 4 * 3)
+    // see mapping method in BitwiseXOR.java
+    int bitwiseXORIndex;
     
     /**
      * Creates new form ImageStegano
@@ -55,9 +63,12 @@ public class ImageStegano extends javax.swing.JFrame {
         imageUtility = new ImageUtility();
         bitPlane = new BPCS();
         bpcsIndex = -9;
+        colourMapIndex = -1;
+        bitwiseXORIndex = 0;
+        bitwiseXOR = new BitwiseXOR();
         
         //[-1, -8] all plane BPCS
-        minIndex = -8;
+        minBPCSIndex = -8;
         
         initComponents();
     }
@@ -72,11 +83,16 @@ public class ImageStegano extends javax.swing.JFrame {
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
-        nameLabel = new javax.swing.JLabel();
+        buttonGroup1 = new javax.swing.ButtonGroup();
         previousButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         imageLabel = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        nameLabel = new javax.swing.JLabel();
+        bitPlaneRadioButton = new javax.swing.JRadioButton();
+        colourMapRadioButton = new javax.swing.JRadioButton();
+        bitwiseXORRadioButton = new javax.swing.JRadioButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
@@ -84,7 +100,6 @@ public class ImageStegano extends javax.swing.JFrame {
         exitMenuItem = new javax.swing.JMenuItem();
         analyzeMenu = new javax.swing.JMenu();
         histogramMenu = new javax.swing.JMenu();
-        colourMapMenu = new javax.swing.JMenu();
         hideDataMenu = new javax.swing.JMenu();
         helpMenu = new javax.swing.JMenu();
 
@@ -92,8 +107,6 @@ public class ImageStegano extends javax.swing.JFrame {
         fileChooser.setFileFilter(new ImageFilter());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        nameLabel.setText("Open an Image using Ctrl + O or File menu");
 
         previousButton.setText("Previous");
         previousButton.addActionListener(new java.awt.event.ActionListener() {
@@ -121,6 +134,47 @@ public class ImageStegano extends javax.swing.JFrame {
 
         imageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jScrollPane1.setViewportView(imageLabel);
+
+        nameLabel.setText("Open an Image using Ctrl + O or File menu");
+
+        buttonGroup1.add(bitPlaneRadioButton);
+        bitPlaneRadioButton.setSelected(true);
+        bitPlaneRadioButton.setText("Bit Plane");
+
+        buttonGroup1.add(colourMapRadioButton);
+        colourMapRadioButton.setText("Colour Map");
+
+        buttonGroup1.add(bitwiseXORRadioButton);
+        bitwiseXORRadioButton.setText("Bitwise XOR");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 568, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(bitPlaneRadioButton)
+                        .addGap(54, 54, 54)
+                        .addComponent(colourMapRadioButton)
+                        .addGap(54, 54, 54)
+                        .addComponent(bitwiseXORRadioButton)))
+                .addContainerGap(21, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bitPlaneRadioButton)
+                    .addComponent(colourMapRadioButton)
+                    .addComponent(bitwiseXORRadioButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30))
+        );
 
         fileMenu.setText("File");
 
@@ -158,9 +212,6 @@ public class ImageStegano extends javax.swing.JFrame {
         histogramMenu.setText("Histogram");
         jMenuBar1.add(histogramMenu);
 
-        colourMapMenu.setText("Colour Map");
-        jMenuBar1.add(colourMapMenu);
-
         hideDataMenu.setText("Hide Data");
         jMenuBar1.add(hideDataMenu);
 
@@ -179,19 +230,15 @@ public class ImageStegano extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(nextButton)
                 .addGap(143, 143, 143))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 568, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(previousButton)
@@ -214,13 +261,16 @@ public class ImageStegano extends javax.swing.JFrame {
                     originalImage = ImageIO.read(openedFile);
                     
                     // will initialize pixelSize variable
+                    System.out.println("Original Image Info:");
                     printImageInfo(originalImage);
                     
                     // converting original image to suitable type
+                    System.out.println("Converted Image Info:");
                     originalImage = imageUtility.convertImage(originalImage);
                     
                     // will ovverride pixelSize variable
                     printImageInfo(originalImage);
+                    
                     imageLabel.setIcon(new ImageIcon(originalImage));
                     nameLabel.setText("Normal Image. Use --> " + 
                             "and <-- key to navigate.");
@@ -241,11 +291,25 @@ public class ImageStegano extends javax.swing.JFrame {
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
     private void previousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousButtonActionPerformed
-        if (bpcsIndex <= minIndex) {
-            bpcsIndex = pixelSize;
-        }
-        bpcsIndex--;
-        manipulateImage();
+        if (bitPlaneRadioButton.isSelected()) {
+            if (bpcsIndex <= minBPCSIndex) {
+                bpcsIndex = pixelSize;
+            }
+            bpcsIndex--;
+            manipulateImage();
+        } else if (bitwiseXORRadioButton.isSelected()) {
+            if (bitwiseXORIndex <= 1) {
+                bitwiseXORIndex = 29;
+            }
+            bitwiseXORIndex--;
+            applyBitwiseXOR();
+        } else if (colourMapRadioButton.isSelected()) {
+            if (colourMapIndex <= 0) {
+                colourMapIndex = 8;
+            }
+            colourMapIndex--;
+            applyColourMap();
+        } 
     }//GEN-LAST:event_previousButtonActionPerformed
 
     private void previousButtonKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_previousButtonKeyReleased
@@ -267,11 +331,25 @@ public class ImageStegano extends javax.swing.JFrame {
     }//GEN-LAST:event_nextButtonKeyReleased
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
-        if (bpcsIndex >= pixelSize - 1) {
-            bpcsIndex = minIndex - 1;
+        if (bitPlaneRadioButton.isSelected()) {
+            if (bpcsIndex >= pixelSize - 1) {
+                bpcsIndex = minBPCSIndex - 1;
+            }
+            bpcsIndex++;
+            manipulateImage();
+        } else if (bitwiseXORRadioButton.isSelected()) {
+            if (bitwiseXORIndex >= 28) {
+                bitwiseXORIndex = 0;
+            }
+            bitwiseXORIndex++;
+            applyBitwiseXOR();
+        } else if (colourMapRadioButton.isSelected()) {
+            if (colourMapIndex >= 7) {
+                colourMapIndex = -1;
+            }
+            colourMapIndex++;
+            applyColourMap();
         }
-        bpcsIndex++;
-        manipulateImage();
     }//GEN-LAST:event_nextButtonActionPerformed
 
     private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
@@ -366,7 +444,7 @@ public class ImageStegano extends javax.swing.JFrame {
     private void manipulateImage() {
         if (bpcsIndex >= 0) {
             applySinglePlaneBPCS();
-        } else if (bpcsIndex >= minIndex) {
+        } else if (bpcsIndex >= minBPCSIndex) {
             applyAllPlaneBPCS();
         }
     }
@@ -380,6 +458,14 @@ public class ImageStegano extends javax.swing.JFrame {
         }
     }
     
+    private void applyBitwiseXOR() {
+        if (originalImage != null) {
+            currentImage = imageUtility.copyImage(originalImage);
+            bitwiseXOR.xor(currentImage, bitwiseXORIndex, pixelSize, nameLabel);
+            imageLabel.setIcon(new ImageIcon(currentImage));
+        }
+    }
+    
     private void printImageInfo(BufferedImage image) {
         System.out.println("Image Type: " + image.getType());
         ColorModel colorModel = image.getColorModel();
@@ -389,10 +475,17 @@ public class ImageStegano extends javax.swing.JFrame {
                 + colorModel.hasAlpha());
     }
     
+    private void applyColourMap() {
+        System.out.println(colourMapIndex);
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu analyzeMenu;
-    private javax.swing.JMenu colourMapMenu;
+    private javax.swing.JRadioButton bitPlaneRadioButton;
+    private javax.swing.JRadioButton bitwiseXORRadioButton;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JRadioButton colourMapRadioButton;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JMenu fileMenu;
@@ -401,6 +494,7 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JMenu histogramMenu;
     private javax.swing.JLabel imageLabel;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JButton nextButton;
