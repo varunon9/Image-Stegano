@@ -6,7 +6,7 @@
       <Properties>
         <Property name="dialogTitle" type="java.lang.String" value="Choose an image"/>
         <Property name="fileFilter" type="javax.swing.filechooser.FileFilter" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new ImageFilter()" type="code"/>
+          <Connection code="new imagestegano.ImageFileFilter()" type="code"/>
         </Property>
       </Properties>
     </Component>

@@ -6,8 +6,9 @@
             <file>file:/home/varun/Desktop/Github/ImageStegano/src/imagestegano/ImageFilter.java</file>
             <file>file:/home/varun/Desktop/Github/ImageStegano/src/steganography/BPCS.java</file>
             <file>file:/home/varun/Desktop/Github/ImageStegano/src/imagestegano/ImageStegano.java</file>
+            <file>file:/home/varun/Desktop/Github/ImageStegano/src/steganography/ColourMap.java</file>
             <file>file:/home/varun/Desktop/Github/ImageStegano/src/utility/ImageUtility.java</file>
-            <file>file:/home/varun/Desktop/Github/ImageStegano/src/imagestegano/ImageSteganoController.java</file>
+            <file>file:/home/varun/Desktop/Github/ImageStegano/src/steganography/BitwiseXOR.java</file>
         </group>
     </open-files>
 </project-private>

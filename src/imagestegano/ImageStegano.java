@@ -14,6 +14,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import steganography.BPCS;
 import steganography.BitwiseXOR;
+import steganography.ColourMap;
 import utility.ImageUtility;
 
 /**
@@ -28,6 +29,7 @@ public class ImageStegano extends javax.swing.JFrame {
     BPCS bitPlane;
     File openedFile;
     BitwiseXOR bitwiseXOR;
+    ColourMap colourMap;
     
     // pixel size of original image
     int pixelSize;
@@ -66,6 +68,7 @@ public class ImageStegano extends javax.swing.JFrame {
         colourMapIndex = -1;
         bitwiseXORIndex = 0;
         bitwiseXOR = new BitwiseXOR();
+        colourMap = new ColourMap();
         
         //[-1, -8] all plane BPCS
         minBPCSIndex = -8;
@@ -104,7 +107,7 @@ public class ImageStegano extends javax.swing.JFrame {
         helpMenu = new javax.swing.JMenu();
 
         fileChooser.setDialogTitle("Choose an image");
-        fileChooser.setFileFilter(new ImageFilter());
+        fileChooser.setFileFilter(new ImageFileFilter());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -256,7 +259,7 @@ public class ImageStegano extends javax.swing.JFrame {
             openedFile = fileChooser.getSelectedFile();
             String name = openedFile.getName();
             try {
-                ImageFilter imageFilter = new ImageFilter();
+                ImageFileFilter imageFilter = new ImageFileFilter();
                 if (imageFilter.isImage(name)) {
                     originalImage = ImageIO.read(openedFile);
                     
@@ -476,7 +479,12 @@ public class ImageStegano extends javax.swing.JFrame {
     }
     
     private void applyColourMap() {
-        System.out.println(colourMapIndex);
+        if (originalImage != null) {
+            currentImage = imageUtility.copyImage(originalImage);
+            currentImage = colourMap.changeColourMap(currentImage, 
+                    colourMapIndex, nameLabel);
+            imageLabel.setIcon(new ImageIcon(currentImage));
+        }
     }
     
 

@@ -114,8 +114,8 @@ public class BitwiseXOR {
         int bytesPerPixel = pixelSize / 8;
         for (int i = 0; i < image.length; i += bytesPerPixel) {
             for (int j = 0; j < bytesPerPixel; j++) {
-                int sourceBitValue = (image[i + j] >> sourceBit);
-                int targetBitValue = (image[i + j] >> targetBit);
+                int sourceBitValue = (image[i + j] >> sourceBit) & 1;
+                int targetBitValue = (image[i + j] >> targetBit) & 1;
                 int singleBit = sourceBitValue ^ targetBitValue;
                 if (singleBit == 0) {
                     image[i + j] = 0x00;
