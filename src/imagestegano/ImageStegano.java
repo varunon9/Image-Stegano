@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import steganography.BPCS;
 import steganography.BitwiseXOR;
 import steganography.ColourMap;
+import steganography.ImageManipulation;
 import utility.ImageUtility;
 
 /**
@@ -60,6 +61,8 @@ public class ImageStegano extends javax.swing.JFrame {
     
     CustomIndexColorModel customIndexColorModelObject;
     IndexColorModel customIndexColorModels[];
+    int othersIndex;
+    ImageManipulation imageManipulation;
     
     /**
      * Creates new form ImageStegano
@@ -81,6 +84,8 @@ public class ImageStegano extends javax.swing.JFrame {
         customIndexColorModelObject = new CustomIndexColorModel();
         customIndexColorModels = 
                 customIndexColorModelObject.getIndexColorModelArray();
+        othersIndex = 0;
+        imageManipulation = new ImageManipulation();
         
         initComponents();
     }
@@ -105,6 +110,7 @@ public class ImageStegano extends javax.swing.JFrame {
         bitPlaneRadioButton = new javax.swing.JRadioButton();
         colourMapRadioButton = new javax.swing.JRadioButton();
         bitwiseXORRadioButton = new javax.swing.JRadioButton();
+        othersRadioButton = new javax.swing.JRadioButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
@@ -116,7 +122,7 @@ public class ImageStegano extends javax.swing.JFrame {
         helpMenu = new javax.swing.JMenu();
 
         fileChooser.setDialogTitle("Choose an image");
-        fileChooser.setFileFilter(new ImageFileFilter());
+        fileChooser.setFileFilter(new imagestegano.ImageFileFilter());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -159,6 +165,9 @@ public class ImageStegano extends javax.swing.JFrame {
         buttonGroup1.add(bitwiseXORRadioButton);
         bitwiseXORRadioButton.setText("Bitwise XOR");
 
+        buttonGroup1.add(othersRadioButton);
+        othersRadioButton.setText("Others");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -172,7 +181,9 @@ public class ImageStegano extends javax.swing.JFrame {
                         .addGap(54, 54, 54)
                         .addComponent(colourMapRadioButton)
                         .addGap(54, 54, 54)
-                        .addComponent(bitwiseXORRadioButton)))
+                        .addComponent(bitwiseXORRadioButton)
+                        .addGap(51, 51, 51)
+                        .addComponent(othersRadioButton)))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -182,7 +193,8 @@ public class ImageStegano extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bitPlaneRadioButton)
                     .addComponent(colourMapRadioButton)
-                    .addComponent(bitwiseXORRadioButton))
+                    .addComponent(bitwiseXORRadioButton)
+                    .addComponent(othersRadioButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30))
@@ -324,7 +336,13 @@ public class ImageStegano extends javax.swing.JFrame {
             }
             colourMapIndex--;
             applyColourMap();
-        } 
+        } else if (othersRadioButton.isSelected()) {
+            if (othersIndex <= 1) {
+                othersIndex = 3;
+            }
+            othersIndex--;
+            otherManipulations();
+        }
     }//GEN-LAST:event_previousButtonActionPerformed
 
     private void previousButtonKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_previousButtonKeyReleased
@@ -364,6 +382,12 @@ public class ImageStegano extends javax.swing.JFrame {
             }
             colourMapIndex++;
             applyColourMap();
+        } else if (othersRadioButton.isSelected()) {
+            if (othersIndex >= 2) {
+                othersIndex = 0;
+            }
+            othersIndex++;
+            otherManipulations();
         }
     }//GEN-LAST:event_nextButtonActionPerformed
 
@@ -504,6 +528,26 @@ public class ImageStegano extends javax.swing.JFrame {
         }
     }
     
+    private void otherManipulations() {
+        if (originalImage == null) {
+            return;
+        }
+        currentImage = imageUtility.copyImage(originalImage);
+        switch (othersIndex) {
+            case 1: {
+                imageManipulation.convertToGrayscale(currentImage);
+                nameLabel.setText("Grayscale");
+                break;
+            }
+            case 2: {
+                imageManipulation.invertImage(currentImage, pixelSize);
+                nameLabel.setText("Inverted");
+                break;
+            }
+        }
+        imageLabel.setIcon(new ImageIcon(currentImage));
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu analyzeMenu;
@@ -524,6 +568,7 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JLabel nameLabel;
     private javax.swing.JButton nextButton;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JRadioButton othersRadioButton;
     private javax.swing.JButton previousButton;
     private javax.swing.JMenuItem saveAsMenuItem;
     // End of variables declaration//GEN-END:variables

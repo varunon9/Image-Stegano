@@ -35,12 +35,13 @@ This tool also provides following additional options-
 3. Providing metadata about the image
 4. Detecting size anomaly for .bmp files
 
-#### Working Demo of Bit Plane Steganography (BPCS)
+#### Working Demo of Bit Plane Steganography (BPCS) and Colour Map
 
 1. Choose an image to open: ![Opening Image] (./screenshots/openingImage.png)
 2. Original Image: ![Selected Image] (./screenshots/openedImage.png)
 3. 6th bit plane (RGB) ![All Plane 6th bit] (./screenshots/allPlane6.png)
 4. Hidden image in 0th bit plane ![Hidden Image] (./screenshots/bpcsHidden.png)
+5. Hidden Flag visible when color model is changed ![Hidden Flag] (./screenshots/colourMap.png)
 
 #### How to start tool
 
