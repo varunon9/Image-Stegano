@@ -41,6 +41,9 @@ public class ImageUtility {
             newImageType = BufferedImage.TYPE_4BYTE_ABGR;
         } else if (newImageType == BufferedImage.TYPE_INT_ARGB_PRE) {
             newImageType = BufferedImage.TYPE_4BYTE_ABGR_PRE;
+        } else {
+            // no need to convert original image
+            return null;
         }
         BufferedImage newImage = new BufferedImage(originalImage.getWidth(), 
                 originalImage.getHeight(), newImageType);

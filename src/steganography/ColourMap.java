@@ -9,7 +9,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
-import javax.swing.JLabel;
+import java.awt.image.WritableRaster;
 
 /**
  *
@@ -18,39 +18,16 @@ import javax.swing.JLabel;
 public class ColourMap {
     
     public BufferedImage changeColourMap(BufferedImage userSpaceImage, 
-            int colourMapIndex, JLabel nameLabel) {
+            IndexColorModel customIndexColorModel) {
         ColorModel originalCM = userSpaceImage.getColorModel();
         if (originalCM instanceof IndexColorModel) {
-            IndexColorModel cm = getIndexColorModel(colourMapIndex, 
-                    (IndexColorModel) originalCM);
-            BufferedImage newImage = new BufferedImage(userSpaceImage.getWidth(),
-                    userSpaceImage.getHeight(),
-                    BufferedImage.TYPE_BYTE_INDEXED, cm);
-            Graphics g = newImage.getGraphics();
-            g.drawImage(userSpaceImage, 0, 0, null);
-            g.dispose();
-            nameLabel.setText("Colour Map: " + colourMapIndex);
+            boolean isAlphaPremultiplied = userSpaceImage.isAlphaPremultiplied();
+            WritableRaster raster = userSpaceImage.copyData(null);
+            BufferedImage newImage = new BufferedImage(customIndexColorModel, 
+                    raster, isAlphaPremultiplied, null);
             return newImage;
         } else {
-            return userSpaceImage;
+            return null;
         }
-    }
-    
-    private IndexColorModel getIndexColorModel(int index, 
-            IndexColorModel originalCM) {
-        int colourCount = originalCM.getMapSize();
-        byte[] reds = new byte[colourCount];
-        byte[] greens = new byte[colourCount];
-        byte[] blues = new byte[colourCount];
-        originalCM.getReds(reds);
-        originalCM.getBlues(blues);
-        originalCM.getGreens(greens);
-        for (int i = 0; i < colourCount; i++) {
-            reds[i] = (byte) (55 + reds[i]);
-            //greens[i] = 0;
-            //blues[i] = 0;
-        }
-        IndexColorModel cm = new IndexColorModel(8, colourCount, reds, greens, blues);
-        return cm;
     }
 }

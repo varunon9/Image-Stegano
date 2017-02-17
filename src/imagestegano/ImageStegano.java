@@ -5,8 +5,10 @@
  */
 package imagestegano;
 
+import data.CustomIndexColorModel;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -56,6 +58,9 @@ public class ImageStegano extends javax.swing.JFrame {
     // see mapping method in BitwiseXOR.java
     int bitwiseXORIndex;
     
+    CustomIndexColorModel customIndexColorModelObject;
+    IndexColorModel customIndexColorModels[];
+    
     /**
      * Creates new form ImageStegano
      */
@@ -72,6 +77,10 @@ public class ImageStegano extends javax.swing.JFrame {
         
         //[-1, -8] all plane BPCS
         minBPCSIndex = -8;
+        
+        customIndexColorModelObject = new CustomIndexColorModel();
+        customIndexColorModels = 
+                customIndexColorModelObject.getIndexColorModelArray();
         
         initComponents();
     }
@@ -268,11 +277,14 @@ public class ImageStegano extends javax.swing.JFrame {
                     printImageInfo(originalImage);
                     
                     // converting original image to suitable type
-                    System.out.println("Converted Image Info:");
-                    originalImage = imageUtility.convertImage(originalImage);
-                    
-                    // will ovverride pixelSize variable
-                    printImageInfo(originalImage);
+                    currentImage = imageUtility.convertImage(originalImage);
+                    if (currentImage != null) {
+                        originalImage = currentImage;
+                        System.out.println("Converted Image Info:");
+                        
+                        // will ovverride pixelSize variable
+                        printImageInfo(originalImage);
+                    }
                     
                     imageLabel.setIcon(new ImageIcon(originalImage));
                     nameLabel.setText("Normal Image. Use --> " + 
@@ -482,8 +494,13 @@ public class ImageStegano extends javax.swing.JFrame {
         if (originalImage != null) {
             currentImage = imageUtility.copyImage(originalImage);
             currentImage = colourMap.changeColourMap(currentImage, 
-                    colourMapIndex, nameLabel);
-            imageLabel.setIcon(new ImageIcon(currentImage));
+                    customIndexColorModels[colourMapIndex]);
+            if (currentImage != null) {
+                nameLabel.setText("Colour Map: " + colourMapIndex);
+                imageLabel.setIcon(new ImageIcon(currentImage));
+            } else {
+                nameLabel.setText("Not an indexed image");
+            }
         }
     }
     
