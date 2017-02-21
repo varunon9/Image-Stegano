@@ -63,6 +63,8 @@ public class ImageStegano extends javax.swing.JFrame {
     IndexColorModel customIndexColorModels[];
     int othersIndex;
     ImageManipulation imageManipulation;
+    BufferedImage coverImage;
+    BufferedImage targetImage;
     
     /**
      * Creates new form ImageStegano
@@ -101,6 +103,20 @@ public class ImageStegano extends javax.swing.JFrame {
 
         fileChooser = new javax.swing.JFileChooser();
         buttonGroup1 = new javax.swing.ButtonGroup();
+        hideImageFrame = new javax.swing.JFrame();
+        jLabel1 = new javax.swing.JLabel();
+        chooseSourceImageButton = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        chooseTargetImageButton = new javax.swing.JButton();
+        coverImageLabel = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        hideImageButton = new javax.swing.JButton();
+        targetImageLabel = new javax.swing.JLabel();
+        imageHideMethodComboBox = new javax.swing.JComboBox();
+        imageEncryptionComboBox = new javax.swing.JComboBox();
+        encryptionLabel = new javax.swing.JLabel();
+        encryptionTextField = new javax.swing.JTextField();
         previousButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -117,14 +133,141 @@ public class ImageStegano extends javax.swing.JFrame {
         saveAsMenuItem = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
         analyzeMenu = new javax.swing.JMenu();
+        metaDataMenuItem = new javax.swing.JMenuItem();
+        extractImageMenuItem = new javax.swing.JMenuItem();
+        extractTextMenuItem = new javax.swing.JMenuItem();
+        pngCheckMenuItem = new javax.swing.JMenuItem();
         histogramMenu = new javax.swing.JMenu();
         hideDataMenu = new javax.swing.JMenu();
+        hideImageMenuItem = new javax.swing.JMenuItem();
+        hideTextMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
 
         fileChooser.setDialogTitle("Choose an image");
         fileChooser.setFileFilter(new imagestegano.ImageFileFilter());
 
+        hideImageFrame.setTitle("Hide Image");
+
+        jLabel1.setText("Select a carrier Image");
+
+        chooseSourceImageButton.setText("choose");
+        chooseSourceImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseSourceImageButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Select target image (image to hide)");
+
+        chooseTargetImageButton.setText("choose");
+        chooseTargetImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseTargetImageButtonActionPerformed(evt);
+            }
+        });
+
+        coverImageLabel.setForeground(new java.awt.Color(140, 56, 104));
+
+        jLabel4.setText("Select method");
+
+        jLabel3.setText("Select Encryption option");
+
+        hideImageButton.setText("Hide Image");
+        hideImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hideImageButtonActionPerformed(evt);
+            }
+        });
+
+        targetImageLabel.setForeground(new java.awt.Color(140, 56, 104));
+
+        imageHideMethodComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0th bit BPCS", "1st bit BPCS", "2nd bit BPCS", "3rd bit BPCS" }));
+
+        imageEncryptionComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Invert Bits", "Bitwise XOR with key", "Bitwise XOR with upper bits" }));
+
+        encryptionLabel.setText("Enter Key");
+
+        encryptionTextField.setEditable(false);
+
+        javax.swing.GroupLayout hideImageFrameLayout = new javax.swing.GroupLayout(hideImageFrame.getContentPane());
+        hideImageFrame.getContentPane().setLayout(hideImageFrameLayout);
+        hideImageFrameLayout.setHorizontalGroup(
+            hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(hideImageFrameLayout.createSequentialGroup()
+                .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(hideImageFrameLayout.createSequentialGroup()
+                        .addGap(161, 161, 161)
+                        .addComponent(hideImageButton))
+                    .addGroup(hideImageFrameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(encryptionLabel)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(hideImageFrameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(hideImageFrameLayout.createSequentialGroup()
+                        .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(hideImageFrameLayout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(chooseSourceImageButton))
+                            .addGroup(hideImageFrameLayout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(chooseTargetImageButton)))
+                        .addGap(48, 48, 48))
+                    .addGroup(hideImageFrameLayout.createSequentialGroup()
+                        .addComponent(coverImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, hideImageFrameLayout.createSequentialGroup()
+                        .addComponent(targetImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, hideImageFrameLayout.createSequentialGroup()
+                        .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(imageEncryptionComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(imageHideMethodComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(encryptionTextField))
+                        .addGap(50, 50, 50))))
+        );
+        hideImageFrameLayout.setVerticalGroup(
+            hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(hideImageFrameLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(chooseSourceImageButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(coverImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(chooseTargetImageButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(targetImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(imageHideMethodComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(imageEncryptionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addGap(18, 18, 18)
+                .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(encryptionLabel)
+                    .addComponent(encryptionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addComponent(hideImageButton)
+                .addContainerGap())
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("ImageStegano Tool");
+        setName("ImageStegano"); // NOI18N
 
         previousButton.setText("Previous");
         previousButton.addActionListener(new java.awt.event.ActionListener() {
@@ -231,12 +374,39 @@ public class ImageStegano extends javax.swing.JFrame {
         jMenuBar1.add(fileMenu);
 
         analyzeMenu.setText("Analyze");
+
+        metaDataMenuItem.setText("Meta Data");
+        analyzeMenu.add(metaDataMenuItem);
+
+        extractImageMenuItem.setText("Extract Image");
+        analyzeMenu.add(extractImageMenuItem);
+
+        extractTextMenuItem.setText("Extract Text");
+        analyzeMenu.add(extractTextMenuItem);
+
+        pngCheckMenuItem.setText("PNG Check");
+        analyzeMenu.add(pngCheckMenuItem);
+
         jMenuBar1.add(analyzeMenu);
 
         histogramMenu.setText("Histogram");
         jMenuBar1.add(histogramMenu);
 
         hideDataMenu.setText("Hide Data");
+
+        hideImageMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
+        hideImageMenuItem.setText("Hide Image");
+        hideImageMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hideImageMenuItemActionPerformed(evt);
+            }
+        });
+        hideDataMenu.add(hideImageMenuItem);
+
+        hideTextMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
+        hideTextMenuItem.setText("Hide Text");
+        hideDataMenu.add(hideTextMenuItem);
+
         jMenuBar1.add(hideDataMenu);
 
         helpMenu.setText("Help");
@@ -417,6 +587,67 @@ public class ImageStegano extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
+    private void hideImageMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideImageMenuItemActionPerformed
+        hideImageFrame.setBounds(0, 0, 450, 320);
+        hideImageFrame.setVisible(true);
+    }//GEN-LAST:event_hideImageMenuItemActionPerformed
+
+    private void hideImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideImageButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_hideImageButtonActionPerformed
+
+    private void chooseSourceImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseSourceImageButtonActionPerformed
+        fileChooser.setDialogTitle("Select a cover image");
+        int returnVal = fileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            openedFile = fileChooser.getSelectedFile();
+            String name = openedFile.getName();
+            try {
+                ImageFileFilter imageFilter = new ImageFileFilter();
+                if (imageFilter.isImage(name)) {
+                    coverImage = ImageIO.read(openedFile);
+                    
+                    // converting cover image to suitable type
+                    coverImage = imageUtility.convertImage(coverImage);
+                    
+                    coverImageLabel.setText(name + ", size: " + 
+                            openedFile.length() / 1024 + " KB");
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Please select an image");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_chooseSourceImageButtonActionPerformed
+
+    private void chooseTargetImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseTargetImageButtonActionPerformed
+        fileChooser.setDialogTitle("Select the target image");
+        int returnVal = fileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            openedFile = fileChooser.getSelectedFile();
+            String name = openedFile.getName();
+            try {
+                ImageFileFilter imageFilter = new ImageFileFilter();
+                if (imageFilter.isImage(name)) {
+                    targetImage = ImageIO.read(openedFile);
+                    
+                    // converting cover image to suitable type
+                    targetImage = imageUtility.convertImage(targetImage);
+                    
+                    targetImageLabel.setText(name + ", size: " + 
+                            openedFile.length() / 1024 + " KB");
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Please select an image");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_chooseTargetImageButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -554,22 +785,42 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JRadioButton bitPlaneRadioButton;
     private javax.swing.JRadioButton bitwiseXORRadioButton;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton chooseSourceImageButton;
+    private javax.swing.JButton chooseTargetImageButton;
     private javax.swing.JRadioButton colourMapRadioButton;
+    private javax.swing.JLabel coverImageLabel;
+    private javax.swing.JLabel encryptionLabel;
+    private javax.swing.JTextField encryptionTextField;
     private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenuItem extractImageMenuItem;
+    private javax.swing.JMenuItem extractTextMenuItem;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenu hideDataMenu;
+    private javax.swing.JButton hideImageButton;
+    private javax.swing.JFrame hideImageFrame;
+    private javax.swing.JMenuItem hideImageMenuItem;
+    private javax.swing.JMenuItem hideTextMenuItem;
     private javax.swing.JMenu histogramMenu;
+    private javax.swing.JComboBox imageEncryptionComboBox;
+    private javax.swing.JComboBox imageHideMethodComboBox;
     private javax.swing.JLabel imageLabel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenuItem metaDataMenuItem;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JButton nextButton;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JRadioButton othersRadioButton;
+    private javax.swing.JMenuItem pngCheckMenuItem;
     private javax.swing.JButton previousButton;
     private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JLabel targetImageLabel;
     // End of variables declaration//GEN-END:variables
 }
