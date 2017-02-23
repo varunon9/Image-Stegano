@@ -43,6 +43,10 @@ This tool also provides following additional options-
 4. Hidden image in 0th bit plane ![Hidden Image] (./screenshots/bpcsHidden.png)
 5. Hidden Flag visible when color model is changed ![Hidden Flag] (./screenshots/colourMap.png)
 
+#### GUI Screenshots
+
+1. Hide Image: ![Hide Image] (./screenshots/hideImage.png)
+
 #### How to start tool
 
 1. Clone this Repository / Download zip 

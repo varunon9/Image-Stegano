@@ -70,4 +70,17 @@ public class BPCS {
             }
         }
     }
+    
+    public void hideImage(BufferedImage coverImage, BufferedImage targetImage,
+            int lsb, boolean invertBits) {
+        
+    }
+    
+    public void hideImage(BufferedImage coverImage, BufferedImage targetImage,
+            int lsb, int upperBit) {
+    }
+    
+    public void hideImage(BufferedImage coverImage, BufferedImage targetImage,
+            int lsb, String key) {
+    }
 }

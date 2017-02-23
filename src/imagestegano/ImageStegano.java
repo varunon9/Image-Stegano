@@ -65,6 +65,7 @@ public class ImageStegano extends javax.swing.JFrame {
     ImageManipulation imageManipulation;
     BufferedImage coverImage;
     BufferedImage targetImage;
+    File targetImageFile;
     
     /**
      * Creates new form ImageStegano
@@ -88,6 +89,8 @@ public class ImageStegano extends javax.swing.JFrame {
                 customIndexColorModelObject.getIndexColorModelArray();
         othersIndex = 0;
         imageManipulation = new ImageManipulation();
+        coverImage = null;
+        targetImage = null;
         
         initComponents();
     }
@@ -184,8 +187,13 @@ public class ImageStegano extends javax.swing.JFrame {
         imageHideMethodComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0th bit BPCS", "1st bit BPCS", "2nd bit BPCS", "3rd bit BPCS" }));
 
         imageEncryptionComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Invert Bits", "Bitwise XOR with key", "Bitwise XOR with upper bits" }));
+        imageEncryptionComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                imageEncryptionComboBoxActionPerformed(evt);
+            }
+        });
 
-        encryptionLabel.setText("Enter Key");
+        encryptionLabel.setText("Bits will be inverted");
 
         encryptionTextField.setEditable(false);
 
@@ -472,8 +480,7 @@ public class ImageStegano extends javax.swing.JFrame {
                     nameLabel.setText("Normal Image. Use --> " + 
                             "and <-- key to navigate.");
                 } else {
-                    JOptionPane.showMessageDialog(null, 
-                            "Please select an image");
+                    alert("Please select an image");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -579,7 +586,7 @@ public class ImageStegano extends javax.swing.JFrame {
             if (imageUtility.isImage(name)) {
                 imageUtility.saveImage(currentImage, file);
             } else {
-                JOptionPane.showMessageDialog(null, "Invalid file name");
+                alert("Invalid file name");
             }
             
         } else {
@@ -593,7 +600,45 @@ public class ImageStegano extends javax.swing.JFrame {
     }//GEN-LAST:event_hideImageMenuItemActionPerformed
 
     private void hideImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideImageButtonActionPerformed
-        // TODO add your handling code here:
+        if (coverImage == null) {
+            alert("Please select cover image");
+            return;
+        }
+        if (targetImage == null) {
+            alert("Please select an image to hide");
+            return;
+        }
+        int lsb = imageHideMethodComboBox.getSelectedIndex();
+        int encryption = imageEncryptionComboBox.getSelectedIndex();        
+
+        // invert bits
+        if (encryption == 0) {
+            bitPlane.hideImage(coverImage, targetImage, lsb, true);
+        } else if (encryption == 1) {
+            // Bitwise XOR with key
+            String key = encryptionTextField.getText();
+            if (key.length() >= 8) {
+                bitPlane.hideImage(coverImage, targetImage, lsb, key);
+            } else {
+                alert("Enter key with minimum length of 8");
+                return;
+            }
+        } else if (encryption == 2) {
+            // Bitwise XOR with upper bits
+            try {
+                int upperBit = Integer.parseInt(encryptionTextField.getText());
+                if (upperBit >= 4 && upperBit <= 7) {
+                    bitPlane.hideImage(coverImage, targetImage, lsb, upperBit);
+                } else {
+                    alert("Enter upper bit between 4 to 7 both inclusive");
+                    return;
+                }
+            } catch(Exception e) {
+                alert("Enter upper bit between 4 to 7 both inclusive");
+                return;
+            }
+        }
+        saveSteganoImage(targetImage, targetImageFile);
     }//GEN-LAST:event_hideImageButtonActionPerformed
 
     private void chooseSourceImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseSourceImageButtonActionPerformed
@@ -608,13 +653,16 @@ public class ImageStegano extends javax.swing.JFrame {
                     coverImage = ImageIO.read(openedFile);
                     
                     // converting cover image to suitable type
-                    coverImage = imageUtility.convertImage(coverImage);
+                    BufferedImage temp = imageUtility.convertImage(coverImage);
+                    
+                    if (temp != null) {
+                        coverImage = temp;
+                    }
                     
                     coverImageLabel.setText(name + ", size: " + 
                             openedFile.length() / 1024 + " KB");
                 } else {
-                    JOptionPane.showMessageDialog(null,
-                            "Please select an image");
+                    alert("Please select an image");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -626,7 +674,7 @@ public class ImageStegano extends javax.swing.JFrame {
         fileChooser.setDialogTitle("Select the target image");
         int returnVal = fileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            openedFile = fileChooser.getSelectedFile();
+            openedFile = targetImageFile = fileChooser.getSelectedFile();
             String name = openedFile.getName();
             try {
                 ImageFileFilter imageFilter = new ImageFileFilter();
@@ -634,19 +682,37 @@ public class ImageStegano extends javax.swing.JFrame {
                     targetImage = ImageIO.read(openedFile);
                     
                     // converting cover image to suitable type
-                    targetImage = imageUtility.convertImage(targetImage);
+                    BufferedImage temp = imageUtility.convertImage(targetImage);
+                    
+                    if (temp != null) {
+                        targetImage = temp;
+                    }
                     
                     targetImageLabel.setText(name + ", size: " + 
                             openedFile.length() / 1024 + " KB");
                 } else {
-                    JOptionPane.showMessageDialog(null,
-                            "Please select an image");
+                    alert("Please select an image");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }//GEN-LAST:event_chooseTargetImageButtonActionPerformed
+
+    private void imageEncryptionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageEncryptionComboBoxActionPerformed
+        String selectedItem = 
+                imageEncryptionComboBox.getSelectedItem().toString();
+        if (selectedItem.equals("Bitwise XOR with key")) {
+            encryptionLabel.setText("Enter key");
+            encryptionTextField.setEditable(true);
+        } else if (selectedItem.equals("Bitwise XOR with upper bits")) {
+            encryptionLabel.setText("Which upper bit (between 4-7)?");
+            encryptionTextField.setEditable(true);
+        } else if (selectedItem.equals("Invert Bits")) {
+            encryptionLabel.setText("Bits will be inverted");
+            encryptionTextField.setEditable(false);
+        }
+    }//GEN-LAST:event_imageEncryptionComboBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -777,6 +843,32 @@ public class ImageStegano extends javax.swing.JFrame {
             }
         }
         imageLabel.setIcon(new ImageIcon(currentImage));
+    }
+    
+    private void alert(String message) {
+        JOptionPane.showMessageDialog(null, message);
+    }
+    
+    private void saveSteganoImage(BufferedImage steganoImage, 
+            File steganoImageFile) {
+        fileChooser.setDialogTitle("Choose a location");
+        String oldFileName = steganoImageFile.getName();
+        String newFileName = imageUtility.getNewFileName(oldFileName);
+        String path = steganoImageFile.getAbsolutePath();
+        path = path.substring(0, path.lastIndexOf(File.separator) + 1);
+        File file = new File(path + newFileName);
+        fileChooser.setSelectedFile(file);
+        int returnVal = fileChooser.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            file = fileChooser.getSelectedFile();
+            String name = file.getName();
+            if (imageUtility.isImage(name)) {
+                imageUtility.saveImage(steganoImage, file);
+            } else {
+                alert("Invalid file name");
+            }
+
+        }
     }
     
 
