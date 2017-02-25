@@ -81,7 +81,7 @@ public class ImageUtility {
     public String getNewFileName(String name) {
         int dotIndex = name.lastIndexOf('.');
         String extension = name.substring(dotIndex + 1);
-        int endIndex = dotIndex - 1;
+        int endIndex = dotIndex;
         String nameWithoutExtension = name.substring(0, endIndex);
         String newName = nameWithoutExtension + "-steg." + extension;
         return newName;
@@ -111,5 +111,14 @@ public class ImageUtility {
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public BufferedImage cropImage(BufferedImage originalImage, int w, int h) {
+        BufferedImage newImage = new BufferedImage(w, h,
+                BufferedImage.TYPE_3BYTE_BGR);
+        Graphics g = newImage.getGraphics();
+        g.drawImage(originalImage, 0, 0, null);
+        g.dispose();
+        return newImage;
     }
 }

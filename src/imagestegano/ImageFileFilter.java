@@ -39,5 +39,14 @@ public class ImageFileFilter extends FileFilter {
         }
         return false;
     }
+    
+    public boolean isPNGOrBMPImage(String name) {
+        String extension = name.substring(name.lastIndexOf('.') + 1);
+        extension = extension.toLowerCase();
+        if (extension.equals("png") || extension.equals("bmp")) {
+            return true;
+        }
+        return false;
+    }
 
 }

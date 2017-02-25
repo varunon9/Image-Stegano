@@ -73,14 +73,70 @@ public class BPCS {
     
     public void hideImage(BufferedImage coverImage, BufferedImage targetImage,
             int lsb, boolean invertBits) {
-        
+        ImageUtility imageUtility = new ImageUtility();
+        byte cover[] = imageUtility.getByteData(coverImage);
+        byte target[] = imageUtility.getByteData(targetImage);
+        int coverLength = cover.length;
+        int targetLength = target.length;
+        int i = 0;
+        while (i < coverLength && i < targetLength) {
+            int msbOfTarget = (target[i] >> 7) & 1;
+            if (invertBits) {
+                msbOfTarget = (~msbOfTarget) & 1;
+            }
+            switch (lsb) {
+                case 0: {
+                    cover[i] = (byte) ((cover[i] & 0xFE) | msbOfTarget);
+                    break;
+                }
+                case 1: {
+                    cover[i] = (byte) ((cover[i] & 0xFD) | 2 * msbOfTarget);
+                    break;
+                }
+                case 2: {
+                    cover[i] = (byte) ((cover[i] & 0xFB) | 4 * msbOfTarget);
+                    break;
+                }
+                case 3: {
+                    cover[i] = (byte) ((cover[i] & 0xF7) | 8 * msbOfTarget);
+                    break;
+                }
+            }
+            i++;
+        }
     }
     
     public void hideImage(BufferedImage coverImage, BufferedImage targetImage,
             int lsb, int upperBit) {
-    }
-    
-    public void hideImage(BufferedImage coverImage, BufferedImage targetImage,
-            int lsb, String key) {
+        ImageUtility imageUtility = new ImageUtility();
+        byte cover[] = imageUtility.getByteData(coverImage);
+        byte target[] = imageUtility.getByteData(targetImage);
+        int coverLength = cover.length;
+        int targetLength = target.length;
+        int i = 0;
+        while (i < coverLength && i < targetLength) {
+            int msbOfTarget = (target[i] >> 7) & 1;
+            int upperBitValue = (cover[i] >> upperBit) & 1;
+            msbOfTarget = msbOfTarget ^ upperBitValue;
+            switch (lsb) {
+                case 0: {
+                    cover[i] = (byte) ((cover[i] & 0xFE) | msbOfTarget);
+                    break;
+                }
+                case 1: {
+                    cover[i] = (byte) ((cover[i] & 0xFD) | 2 * msbOfTarget);
+                    break;
+                }
+                case 2: {
+                    cover[i] = (byte) ((cover[i] & 0xFB) | 4 * msbOfTarget);
+                    break;
+                }
+                case 3: {
+                    cover[i] = (byte) ((cover[i] & 0xF7) | 8 * msbOfTarget);
+                    break;
+                }
+            }
+            i++;
+        }
     }
 }
