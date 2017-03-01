@@ -14,6 +14,8 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import steganography.BPCS;
 import steganography.BitwiseXOR;
 import steganography.ColourMap;
@@ -93,6 +95,23 @@ public class ImageStegano extends javax.swing.JFrame {
         targetImage = null;
         
         initComponents();
+        
+        // customizing threshold menu (no menu item)
+        thresholdMenu.addMenuListener(new MenuListener() {
+
+            @Override
+            public void menuSelected(MenuEvent e) {
+                showThresholdFrame();
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
     }
 
     /**
@@ -121,6 +140,10 @@ public class ImageStegano extends javax.swing.JFrame {
         encryptionLabel = new javax.swing.JLabel();
         encryptionTextField = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        thresholdFrame = new javax.swing.JFrame();
+        currentThresholdLabel = new javax.swing.JLabel();
+        thresholdSlider = new javax.swing.JSlider();
+        currentThresholdSpinner = new javax.swing.JSpinner();
         previousButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -141,7 +164,7 @@ public class ImageStegano extends javax.swing.JFrame {
         extractImageMenuItem = new javax.swing.JMenuItem();
         extractTextMenuItem = new javax.swing.JMenuItem();
         pngCheckMenuItem = new javax.swing.JMenuItem();
-        histogramMenu = new javax.swing.JMenu();
+        thresholdMenu = new javax.swing.JMenu();
         hideDataMenu = new javax.swing.JMenu();
         hideImageMenuItem = new javax.swing.JMenuItem();
         hideTextMenuItem = new javax.swing.JMenuItem();
@@ -280,6 +303,48 @@ public class ImageStegano extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        thresholdFrame.setTitle("Threshold (Histogram)");
+
+        currentThresholdLabel.setText("Current Value:");
+
+        thresholdSlider.setMaximum(255);
+        thresholdSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                thresholdSliderStateChanged(evt);
+            }
+        });
+
+        currentThresholdSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 255, 1));
+        currentThresholdSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                currentThresholdSpinnerStateChanged(evt);
+            }
+        });
+
+        javax.swing.GroupLayout thresholdFrameLayout = new javax.swing.GroupLayout(thresholdFrame.getContentPane());
+        thresholdFrame.getContentPane().setLayout(thresholdFrameLayout);
+        thresholdFrameLayout.setHorizontalGroup(
+            thresholdFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(thresholdFrameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(currentThresholdLabel)
+                .addGap(84, 84, 84)
+                .addComponent(currentThresholdSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(144, Short.MAX_VALUE))
+            .addComponent(thresholdSlider, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        thresholdFrameLayout.setVerticalGroup(
+            thresholdFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(thresholdFrameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(thresholdFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(currentThresholdLabel)
+                    .addComponent(currentThresholdSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addComponent(thresholdSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(31, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ImageStegano Tool");
         setName("ImageStegano"); // NOI18N
@@ -404,8 +469,8 @@ public class ImageStegano extends javax.swing.JFrame {
 
         jMenuBar1.add(analyzeMenu);
 
-        histogramMenu.setText("Histogram");
-        jMenuBar1.add(histogramMenu);
+        thresholdMenu.setText("Threshold");
+        jMenuBar1.add(thresholdMenu);
 
         hideDataMenu.setText("Hide Data");
 
@@ -727,6 +792,16 @@ public class ImageStegano extends javax.swing.JFrame {
         targetImageLabel.setText(null);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void currentThresholdSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_currentThresholdSpinnerStateChanged
+        int value = (int) currentThresholdSpinner.getValue();
+        thresholdSlider.setValue(value);
+    }//GEN-LAST:event_currentThresholdSpinnerStateChanged
+
+    private void thresholdSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_thresholdSliderStateChanged
+        int value = (int) thresholdSlider.getValue();
+        currentThresholdSpinner.setValue(value);
+    }//GEN-LAST:event_thresholdSliderStateChanged
+
     /**
      * @param args the command line arguments
      */
@@ -884,6 +959,19 @@ public class ImageStegano extends javax.swing.JFrame {
         }
     }
     
+    private void showThresholdFrame() {
+        if (originalImage != null) {
+            currentImage = imageUtility.copyImage(originalImage);
+            ColorModel colorModel = currentImage.getColorModel();
+            if (colorModel instanceof IndexColorModel) {
+                nameLabel.setText("Not applicable for indexed image");
+                return;
+            }
+            thresholdFrame.setBounds(0, 0, 400, 148);
+            thresholdFrame.setVisible(true);
+        }
+    }
+    
     private void printResizeImageInfo() {
         if (coverImage != null && targetImage != null) {
             int coverWidth = coverImage.getWidth();
@@ -916,6 +1004,8 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JButton chooseTargetImageButton;
     private javax.swing.JRadioButton colourMapRadioButton;
     private javax.swing.JLabel coverImageLabel;
+    private javax.swing.JLabel currentThresholdLabel;
+    private javax.swing.JSpinner currentThresholdSpinner;
     private javax.swing.JLabel encryptionLabel;
     private javax.swing.JTextField encryptionTextField;
     private javax.swing.JMenuItem exitMenuItem;
@@ -929,7 +1019,6 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JFrame hideImageFrame;
     private javax.swing.JMenuItem hideImageMenuItem;
     private javax.swing.JMenuItem hideTextMenuItem;
-    private javax.swing.JMenu histogramMenu;
     private javax.swing.JComboBox imageEncryptionComboBox;
     private javax.swing.JComboBox imageHideMethodComboBox;
     private javax.swing.JLabel imageLabel;
@@ -950,5 +1039,8 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JButton previousButton;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JLabel targetImageLabel;
+    private javax.swing.JFrame thresholdFrame;
+    private javax.swing.JMenu thresholdMenu;
+    private javax.swing.JSlider thresholdSlider;
     // End of variables declaration//GEN-END:variables
 }

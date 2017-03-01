@@ -37,7 +37,8 @@ public class ImageUtility {
         if (newImageType == BufferedImage.TYPE_INT_RGB
                 || newImageType == BufferedImage.TYPE_INT_BGR) {
             newImageType = BufferedImage.TYPE_3BYTE_BGR;
-        } else if (newImageType == BufferedImage.TYPE_INT_ARGB) {
+        } else if (newImageType == BufferedImage.TYPE_INT_ARGB ||
+                newImageType == BufferedImage.TYPE_CUSTOM) {
             newImageType = BufferedImage.TYPE_4BYTE_ABGR;
         } else if (newImageType == BufferedImage.TYPE_INT_ARGB_PRE) {
             newImageType = BufferedImage.TYPE_4BYTE_ABGR_PRE;
