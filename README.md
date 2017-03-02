@@ -30,7 +30,7 @@ Image-Stegano implements following steganographic methods-
 
 This tool also provides following additional options-
 
-1. Analysis of image using inversion, bit masking and different colour maps
+1. Analysis of image using inversion and different colour maps
 2. Presenting histogram and altering threshold 
 3. Providing metadata about the image
 4. Detecting size anomaly for .bmp files
@@ -46,6 +46,7 @@ This tool also provides following additional options-
 #### GUI Screenshots
 
 1. Hide Image: ![Hide Image] (./screenshots/hideImage.png)
+2. Altering Threshold: ![Altering Threshold] (./screenshots/threshold.png)
 
 #### How to start tool
 

@@ -14,6 +14,7 @@
     </Component>
     <Container class="javax.swing.JFrame" name="hideImageFrame">
       <Properties>
+        <Property name="defaultCloseOperation" type="int" value="2"/>
         <Property name="title" type="java.lang.String" value="Hide Image"/>
       </Properties>
 
@@ -220,6 +221,7 @@
     </Container>
     <Container class="javax.swing.JFrame" name="thresholdFrame">
       <Properties>
+        <Property name="defaultCloseOperation" type="int" value="2"/>
         <Property name="title" type="java.lang.String" value="Threshold (Histogram)"/>
       </Properties>
 
@@ -228,12 +230,12 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
+                  <Component id="currentValueLabel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
                   <Component id="currentThresholdLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="84" max="-2" attributes="0"/>
-                  <Component id="currentThresholdSpinner" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="144" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
-              <Component id="thresholdSlider" alignment="1" max="32767" attributes="0"/>
+              <Component id="thresholdSlider" alignment="1" pref="400" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -241,18 +243,18 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="currentValueLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="currentThresholdLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="currentThresholdSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                   <Component id="thresholdSlider" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="31" max="32767" attributes="0"/>
+                  <EmptySpace pref="36" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="currentThresholdLabel">
+        <Component class="javax.swing.JLabel" name="currentValueLabel">
           <Properties>
             <Property name="text" type="java.lang.String" value="Current Value:"/>
           </Properties>
@@ -265,15 +267,10 @@
             <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="thresholdSliderStateChanged"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JSpinner" name="currentThresholdSpinner">
+        <Component class="javax.swing.JLabel" name="currentThresholdLabel">
           <Properties>
-            <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-              <SpinnerModel initial="0" maximum="255" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
-            </Property>
+            <Property name="text" type="java.lang.String" value="50"/>
           </Properties>
-          <Events>
-            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="currentThresholdSpinnerStateChanged"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>

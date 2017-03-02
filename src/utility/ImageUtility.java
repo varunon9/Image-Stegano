@@ -122,4 +122,24 @@ public class ImageUtility {
         g.dispose();
         return newImage;
     }
+    
+    public BufferedImage thresholdImage(BufferedImage image, int threshold) {
+        BufferedImage result = new BufferedImage(image.getWidth(), 
+                image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        result.getGraphics().drawImage(image, 0, 0, null);
+        WritableRaster raster = result.getRaster();
+        int[] pixels = new int[image.getWidth()];
+        for (int y = 0; y < image.getHeight(); y++) {
+            raster.getPixels(0, y, image.getWidth(), 1, pixels);
+            for (int i = 0; i < pixels.length; i++) {
+                if (pixels[i] < threshold) {
+                    pixels[i] = 0;
+                } else {
+                    pixels[i] = 255;
+                }
+            }
+            raster.setPixels(0, y, image.getWidth(), 1, pixels);
+        }
+        return result;
+    }
 }

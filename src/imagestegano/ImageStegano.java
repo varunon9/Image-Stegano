@@ -141,9 +141,9 @@ public class ImageStegano extends javax.swing.JFrame {
         encryptionTextField = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         thresholdFrame = new javax.swing.JFrame();
-        currentThresholdLabel = new javax.swing.JLabel();
+        currentValueLabel = new javax.swing.JLabel();
         thresholdSlider = new javax.swing.JSlider();
-        currentThresholdSpinner = new javax.swing.JSpinner();
+        currentThresholdLabel = new javax.swing.JLabel();
         previousButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -173,6 +173,7 @@ public class ImageStegano extends javax.swing.JFrame {
         fileChooser.setDialogTitle("Choose an image");
         fileChooser.setFileFilter(new imagestegano.ImageFileFilter());
 
+        hideImageFrame.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         hideImageFrame.setTitle("Hide Image");
 
         jLabel1.setText("Select a carrier Image");
@@ -303,9 +304,10 @@ public class ImageStegano extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        thresholdFrame.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         thresholdFrame.setTitle("Threshold (Histogram)");
 
-        currentThresholdLabel.setText("Current Value:");
+        currentValueLabel.setText("Current Value:");
 
         thresholdSlider.setMaximum(255);
         thresholdSlider.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -314,12 +316,7 @@ public class ImageStegano extends javax.swing.JFrame {
             }
         });
 
-        currentThresholdSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 255, 1));
-        currentThresholdSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                currentThresholdSpinnerStateChanged(evt);
-            }
-        });
+        currentThresholdLabel.setText("50");
 
         javax.swing.GroupLayout thresholdFrameLayout = new javax.swing.GroupLayout(thresholdFrame.getContentPane());
         thresholdFrame.getContentPane().setLayout(thresholdFrameLayout);
@@ -327,22 +324,22 @@ public class ImageStegano extends javax.swing.JFrame {
             thresholdFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(thresholdFrameLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(currentValueLabel)
+                .addGap(39, 39, 39)
                 .addComponent(currentThresholdLabel)
-                .addGap(84, 84, 84)
-                .addComponent(currentThresholdSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(144, Short.MAX_VALUE))
-            .addComponent(thresholdSlider, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(thresholdSlider, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
         );
         thresholdFrameLayout.setVerticalGroup(
             thresholdFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(thresholdFrameLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(thresholdFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(currentThresholdLabel)
-                    .addComponent(currentThresholdSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
+                    .addComponent(currentValueLabel)
+                    .addComponent(currentThresholdLabel))
+                .addGap(31, 31, 31)
                 .addComponent(thresholdSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -792,14 +789,12 @@ public class ImageStegano extends javax.swing.JFrame {
         targetImageLabel.setText(null);
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void currentThresholdSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_currentThresholdSpinnerStateChanged
-        int value = (int) currentThresholdSpinner.getValue();
-        thresholdSlider.setValue(value);
-    }//GEN-LAST:event_currentThresholdSpinnerStateChanged
-
     private void thresholdSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_thresholdSliderStateChanged
         int value = (int) thresholdSlider.getValue();
-        currentThresholdSpinner.setValue(value);
+        currentThresholdLabel.setText((String.valueOf(value)));
+        currentImage = imageUtility.copyImage(originalImage);
+        currentImage = imageUtility.thresholdImage(currentImage, value);
+        imageLabel.setIcon(new ImageIcon(currentImage));
     }//GEN-LAST:event_thresholdSliderStateChanged
 
     /**
@@ -969,6 +964,8 @@ public class ImageStegano extends javax.swing.JFrame {
             }
             thresholdFrame.setBounds(0, 0, 400, 148);
             thresholdFrame.setVisible(true);
+            currentImage = imageUtility.thresholdImage(currentImage, 50);
+            imageLabel.setIcon(new ImageIcon(currentImage));
         }
     }
     
@@ -1005,7 +1002,7 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JRadioButton colourMapRadioButton;
     private javax.swing.JLabel coverImageLabel;
     private javax.swing.JLabel currentThresholdLabel;
-    private javax.swing.JSpinner currentThresholdSpinner;
+    private javax.swing.JLabel currentValueLabel;
     private javax.swing.JLabel encryptionLabel;
     private javax.swing.JTextField encryptionTextField;
     private javax.swing.JMenuItem exitMenuItem;
