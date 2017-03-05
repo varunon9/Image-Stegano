@@ -1,5 +1,5 @@
 # Image-Stegano 
-#### A tool to analyze and implement various image steganography methods in Java (under development)
+#### A tool to analyze and implement various image steganography methods in Java 
 
 "Steganography is the art and science of communicating in a way which hides the existence of the
 communication. In contrast to Cryptography, where the enemy is allowed to detect, intercept and modify
@@ -22,20 +22,23 @@ popular because of their frequency on the Internet.
 
 Image-Stegano implements following steganographic methods-
 
-1. 1 bit, 2 bits, 3 bits and 4 bits LSB
-2. 24 bits plane (Red, Green, Blue) and 32 bits plane (Red, Green, Blue, Alpha) BPCS
+1. 1 bit, 2 bits, 3 bits and 4 bits LSB with randomization 
+2. 24 bits plane (Red, Green, Blue) and 32 bits plane (Red, Green, Blue, Alpha) 
 3. Bitwise XOR Implementation between LSB and payload
 4. Compression and Encryption of payload 
 5. Steganography Based on File Format
+6. Spiral Embedding
 
 This tool also provides following additional options-
 
 1. Analysis of image using inversion and different colour maps
-2. Presenting histogram and altering threshold 
-3. Providing metadata about the image
-4. Detecting size anomaly for .bmp files
+2. Grayscale analysis of image
+3. Altering threshold of image (Histogram)
+4. Providing metadata about the image
+5. Detecting size anomaly for .bmp files
+6. Chunks analysis of .png images
 
-#### Working Demo of Bit Plane Steganography (BPCS) and Colour Map
+#### Working Demo of Bit Plane Steganography and Colour Map
 
 1. Choose an image to open: ![Opening Image] (./screenshots/openingImage.png)
 2. Original Image: ![Selected Image] (./screenshots/openedImage.png)
