@@ -16,11 +16,19 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import steganography.BPCS;
+import steganography.BitPlane;
 import steganography.BitwiseXOR;
 import steganography.ColourMap;
 import steganography.ImageManipulation;
 import utility.ImageUtility;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import java.awt.Dimension;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -31,7 +39,7 @@ public class ImageStegano extends javax.swing.JFrame {
     BufferedImage originalImage;
     BufferedImage currentImage;
     ImageUtility imageUtility;
-    BPCS bitPlane;
+    BitPlane bitPlane;
     File openedFile;
     BitwiseXOR bitwiseXOR;
     ColourMap colourMap;
@@ -51,7 +59,7 @@ public class ImageStegano extends javax.swing.JFrame {
      */
     int bpcsIndex;
     
-    // negative index will be used for all plane BPCS 
+    // negative index will be used for all plane BitPlane 
     int minBPCSIndex;
     
     // value of colourMapIndex - [0, 7] for 8 different colour maps
@@ -76,14 +84,14 @@ public class ImageStegano extends javax.swing.JFrame {
         originalImage = null;
         currentImage = null;
         imageUtility = new ImageUtility();
-        bitPlane = new BPCS();
+        bitPlane = new BitPlane();
         bpcsIndex = -9;
         colourMapIndex = -1;
         bitwiseXORIndex = 0;
         bitwiseXOR = new BitwiseXOR();
         colourMap = new ColourMap();
         
-        //[-1, -8] all plane BPCS
+        //[-1, -8] all plane BitPlane
         minBPCSIndex = -8;
         
         customIndexColorModelObject = new CustomIndexColorModel();
@@ -139,7 +147,7 @@ public class ImageStegano extends javax.swing.JFrame {
         imageEncryptionComboBox = new javax.swing.JComboBox();
         encryptionLabel = new javax.swing.JLabel();
         encryptionTextField = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        resetSelectionButton = new javax.swing.JButton();
         thresholdFrame = new javax.swing.JFrame();
         currentValueLabel = new javax.swing.JLabel();
         thresholdSlider = new javax.swing.JSlider();
@@ -209,7 +217,7 @@ public class ImageStegano extends javax.swing.JFrame {
 
         targetImageLabel.setForeground(new java.awt.Color(140, 56, 104));
 
-        imageHideMethodComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0th bit BPCS", "1st bit BPCS", "2nd bit BPCS", "3rd bit BPCS" }));
+        imageHideMethodComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0th bit plane", "1st bit plane", "2nd bit plane", "3rd bit plane" }));
 
         imageEncryptionComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No Encryption", "Invert Bits", "Bitwise XOR with upper bits" }));
         imageEncryptionComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -222,10 +230,10 @@ public class ImageStegano extends javax.swing.JFrame {
 
         encryptionTextField.setEditable(false);
 
-        jButton1.setText("Reset selection");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        resetSelectionButton.setText("Reset selection");
+        resetSelectionButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                resetSelectionButtonActionPerformed(evt);
             }
         });
 
@@ -264,7 +272,7 @@ public class ImageStegano extends javax.swing.JFrame {
                                 .addComponent(imageEncryptionComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(imageHideMethodComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(encryptionTextField))
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(resetSelectionButton, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(50, 50, 50))
                     .addGroup(hideImageFrameLayout.createSequentialGroup()
                         .addComponent(encryptionLabel)
@@ -300,7 +308,7 @@ public class ImageStegano extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addGroup(hideImageFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(hideImageButton)
-                    .addComponent(jButton1))
+                    .addComponent(resetSelectionButton))
                 .addContainerGap())
         );
 
@@ -453,6 +461,11 @@ public class ImageStegano extends javax.swing.JFrame {
         analyzeMenu.setText("Analyze");
 
         metaDataMenuItem.setText("Meta Data");
+        metaDataMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                metaDataMenuItemActionPerformed(evt);
+            }
+        });
         analyzeMenu.add(metaDataMenuItem);
 
         extractImageMenuItem.setText("Extract Image");
@@ -782,12 +795,12 @@ public class ImageStegano extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_imageEncryptionComboBoxActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void resetSelectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetSelectionButtonActionPerformed
         coverImage = null;
         targetImage = null;
         coverImageLabel.setText(null);
         targetImageLabel.setText(null);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_resetSelectionButtonActionPerformed
 
     private void thresholdSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_thresholdSliderStateChanged
         int value = (int) thresholdSlider.getValue();
@@ -796,6 +809,26 @@ public class ImageStegano extends javax.swing.JFrame {
         currentImage = imageUtility.thresholdImage(currentImage, value);
         imageLabel.setIcon(new ImageIcon(currentImage));
     }//GEN-LAST:event_thresholdSliderStateChanged
+
+    private void metaDataMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_metaDataMenuItemActionPerformed
+        if (openedFile == null) {
+            return;
+        }
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(openedFile);
+            String metaData = "";
+            for (Directory directory : metadata.getDirectories()) {
+                for (Tag tag : directory.getTags()) {
+                    metaData += tag + "\n";
+                }
+            }
+            alert(metaData, "Meta Data");
+            System.out.println("Courtesy: " + 
+                    "https://github.com/drewnoakes/metadata-extractor");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_metaDataMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -835,7 +868,7 @@ public class ImageStegano extends javax.swing.JFrame {
     private void applySinglePlaneBPCS() {
         if (originalImage != null) {
             currentImage = imageUtility.copyImage(originalImage);
-            bitPlane.singlePlaneBPCS(currentImage, bpcsIndex, pixelSize);
+            bitPlane.singlePlane(currentImage, bpcsIndex, pixelSize);
             imageLabel.setIcon(new ImageIcon(currentImage));
             int bitPlaneCode = bpcsIndex / 8;
             String bitPlaneName = "Alpha";
@@ -871,7 +904,7 @@ public class ImageStegano extends javax.swing.JFrame {
     private void applyAllPlaneBPCS() {
         if (originalImage != null) {
             currentImage = imageUtility.copyImage(originalImage);
-            bitPlane.allPlaneBPCS(currentImage, bpcsIndex, pixelSize);
+            bitPlane.allPlane(currentImage, bpcsIndex, pixelSize);
             imageLabel.setIcon(new ImageIcon(currentImage));
             nameLabel.setText("All plane: " + ((bpcsIndex * -1) - 1) + "th bit");
         }
@@ -991,6 +1024,16 @@ public class ImageStegano extends javax.swing.JFrame {
         }
     }
     
+    private void alert(String message, String title) {
+        JTextArea textArea = new JTextArea(message);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        scrollPane.setPreferredSize(new Dimension(500, 500));
+        JOptionPane.showMessageDialog(null, scrollPane, title,
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu analyzeMenu;
@@ -1019,7 +1062,6 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JComboBox imageEncryptionComboBox;
     private javax.swing.JComboBox imageHideMethodComboBox;
     private javax.swing.JLabel imageLabel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -1034,6 +1076,7 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JRadioButton othersRadioButton;
     private javax.swing.JMenuItem pngCheckMenuItem;
     private javax.swing.JButton previousButton;
+    private javax.swing.JButton resetSelectionButton;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JLabel targetImageLabel;
     private javax.swing.JFrame thresholdFrame;

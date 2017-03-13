@@ -60,7 +60,7 @@
                                   <Component id="imageHideMethodComboBox" min="-2" max="-2" attributes="0"/>
                                   <Component id="encryptionTextField" alignment="0" max="32767" attributes="0"/>
                               </Group>
-                              <Component id="jButton1" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="resetSelectionButton" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                       </Group>
@@ -107,7 +107,7 @@
                   <EmptySpace pref="11" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="hideImageButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="resetSelectionButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -177,10 +177,10 @@
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="4">
-                <StringItem index="0" value="0th bit BPCS"/>
-                <StringItem index="1" value="1st bit BPCS"/>
-                <StringItem index="2" value="2nd bit BPCS"/>
-                <StringItem index="3" value="3rd bit BPCS"/>
+                <StringItem index="0" value="0th bit plane"/>
+                <StringItem index="1" value="1st bit plane"/>
+                <StringItem index="2" value="2nd bit plane"/>
+                <StringItem index="3" value="3rd bit plane"/>
               </StringArray>
             </Property>
           </Properties>
@@ -209,12 +209,12 @@
             <Property name="editable" type="boolean" value="false"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="resetSelectionButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="Reset selection"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="resetSelectionButtonActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
@@ -322,6 +322,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Meta Data"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="metaDataMenuItemActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="extractImageMenuItem">
               <Properties>

@@ -22,12 +22,11 @@ popular because of their frequency on the Internet.
 
 Image-Stegano implements following steganographic methods-
 
-1. 1 bit, 2 bits, 3 bits and 4 bits LSB with randomization 
-2. 24 bits plane (Red, Green, Blue) and 32 bits plane (Red, Green, Blue, Alpha) 
-3. Bitwise XOR Implementation between LSB and payload
-4. Compression and Encryption of payload 
-5. Steganography Based on File Format
-6. Spiral Embedding
+1. 1 bit, 2 bits, 3 bits and 4 bits LSB for text data with randomization (pending)
+2. 24 bits plane (Red, Green, Blue) and 32 bits plane (Red, Green, Blue, Alpha) analysis of image 
+3. Bitwise XOR Implementation between LSB and image payload
+4. Compression and Encryption of text payload (pending)
+5. Spiral Embedding (pending)
 
 This tool also provides following additional options-
 
@@ -35,8 +34,7 @@ This tool also provides following additional options-
 2. Grayscale analysis of image
 3. Altering threshold of image (Histogram)
 4. Providing metadata about the image
-5. Detecting size anomaly for .bmp files
-6. Chunks analysis of .png images
+5. Chunks analysis of .png images (pending)
 
 #### Working Demo of Bit Plane Steganography and Colour Map
 
@@ -50,6 +48,7 @@ This tool also provides following additional options-
 
 1. Hide Image: ![Hide Image] (./screenshots/hideImage.png)
 2. Altering Threshold: ![Altering Threshold] (./screenshots/threshold.png)
+3. Extracting Metadata: ![Extracting Metadata] (./screenshots/meta_data.png)
 
 #### How to start tool
 
@@ -57,6 +56,9 @@ This tool also provides following additional options-
 2. Open terminal (Ctrl + Alt + T)
 3. Type `cd /path/to/repository/ImageStegano/dist/` 
 4. Type `java -jar ImageStegano.jar`
+
+#### Dependencies
+* Image-Stegano tool uses https://github.com/drewnoakes/metadata-extractor library for metadata extraction
 
 ### How to deploy the project
 

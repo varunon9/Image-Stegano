@@ -6,17 +6,15 @@
 package steganography;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
 import utility.ImageUtility;
 
 /**
  *
  * @author varun
  */
-public class BPCS {
+public class BitPlane {
     
-    public void singlePlaneBPCS(BufferedImage userSpaceImage, int bpcsIndex, 
+    public void singlePlane(BufferedImage userSpaceImage, int bpcsIndex, 
             int pixelSize) {
         ImageUtility imageUtility = new ImageUtility();
         byte image[] = imageUtility.getByteData(userSpaceImage);
@@ -48,7 +46,7 @@ public class BPCS {
         }
     }
     
-    public void allPlaneBPCS(BufferedImage userSpaceImage, int bpcsIndex, 
+    public void allPlane(BufferedImage userSpaceImage, int bpcsIndex, 
             int pixelSize) {
         ImageUtility imageUtility = new ImageUtility();
         byte image[] = imageUtility.getByteData(userSpaceImage);

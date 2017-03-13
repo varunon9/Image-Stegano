@@ -10,7 +10,7 @@ import utility.ImageUtility;
 
 /**
  *
- * @author varun
+ * @author varun   
  */
 public class ImageManipulation {
     
