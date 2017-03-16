@@ -169,8 +169,7 @@ public class ImageStegano extends javax.swing.JFrame {
         exitMenuItem = new javax.swing.JMenuItem();
         analyzeMenu = new javax.swing.JMenu();
         metaDataMenuItem = new javax.swing.JMenuItem();
-        extractImageMenuItem = new javax.swing.JMenuItem();
-        extractTextMenuItem = new javax.swing.JMenuItem();
+        appendedDataMenuItem = new javax.swing.JMenuItem();
         pngCheckMenuItem = new javax.swing.JMenuItem();
         thresholdMenu = new javax.swing.JMenu();
         hideDataMenu = new javax.swing.JMenu();
@@ -468,11 +467,8 @@ public class ImageStegano extends javax.swing.JFrame {
         });
         analyzeMenu.add(metaDataMenuItem);
 
-        extractImageMenuItem.setText("Extract Image");
-        analyzeMenu.add(extractImageMenuItem);
-
-        extractTextMenuItem.setText("Extract Text");
-        analyzeMenu.add(extractTextMenuItem);
+        appendedDataMenuItem.setText("Appended Data");
+        analyzeMenu.add(appendedDataMenuItem);
 
         pngCheckMenuItem.setText("PNG Check");
         analyzeMenu.add(pngCheckMenuItem);
@@ -1037,6 +1033,7 @@ public class ImageStegano extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu analyzeMenu;
+    private javax.swing.JMenuItem appendedDataMenuItem;
     private javax.swing.JRadioButton bitPlaneRadioButton;
     private javax.swing.JRadioButton bitwiseXORRadioButton;
     private javax.swing.ButtonGroup buttonGroup1;
@@ -1049,8 +1046,6 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JLabel encryptionLabel;
     private javax.swing.JTextField encryptionTextField;
     private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JMenuItem extractImageMenuItem;
-    private javax.swing.JMenuItem extractTextMenuItem;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;

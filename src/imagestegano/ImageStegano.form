@@ -326,14 +326,9 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="metaDataMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="extractImageMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="appendedDataMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Extract Image"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="extractTextMenuItem">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Extract Text"/>
+                <Property name="text" type="java.lang.String" value="Appended Data"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="pngCheckMenuItem">

@@ -58,7 +58,7 @@ This tool also provides following additional options-
 4. Type `java -jar ImageStegano.jar`
 
 #### Dependencies
-* Image-Stegano tool uses https://github.com/drewnoakes/metadata-extractor library for metadata extraction
+* Image-Stegano tool uses (https://github.com/drewnoakes/metadata-extractor) library for metadata extraction
 
 ### How to deploy the project
 
