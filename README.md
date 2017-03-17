@@ -49,6 +49,7 @@ This tool also provides following additional options-
 1. Hide Image: ![Hide Image](./screenshots/hideImage.png)
 2. Altering Threshold: ![Altering Threshold](./screenshots/threshold.png)
 3. Extracting Metadata: ![Extracting Metadata](./screenshots/meta_data.png)
+4. Hidden Data in PNG chunk: ![PNG Check](./screenshots/png_check.png)
 
 #### How to start tool
 

@@ -841,7 +841,12 @@ public class ImageStegano extends javax.swing.JFrame {
             DataInputStream in = new DataInputStream(inputStream);
             PNGCheck pngCheck = new PNGCheck();
             if (pngCheck.isPNG(in)) {
-                pngCheck.getHiddenData(in);
+                String message = pngCheck.getHiddenData(in);
+                if (message != "") {
+                    alert(message, "Hidden data found");
+                } else {
+                    alert("No hidden data found");
+                }
             } else {
                 alert("Not a png image");
             }

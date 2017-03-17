@@ -16,6 +16,7 @@ import java.util.zip.CRC32;
  */
 public class PNGCheck {
 
+    String message = "";
     /**
      *
      * @param in DataInputStream from InputStream of PNG file
@@ -33,7 +34,7 @@ public class PNGCheck {
         return false;
     }
 
-    public byte[] getHiddenData(DataInputStream in) {
+    public String getHiddenData(DataInputStream in) {
         byte[] data;
         boolean moreData = true;
         while (moreData) {
@@ -52,9 +53,11 @@ public class PNGCheck {
                 // Read the CRC (converting int to long)
                 long crc = in.readInt() & 0x00000000ffffffffL;
                 if (verifyCRC(typeBytes, data, crc) == false) {
-                    printHiddenData(typeBytes, data, "Error in data ");
+                    message += "Error in data: ";
+                    printHiddenData(typeBytes, data);
                 } else if (verifyChunkType(typeBytes) == false) {
-                    printHiddenData(typeBytes, data, "Unknown Chunk ");
+                    message += "Unknown Chunk: ";
+                    printHiddenData(typeBytes, data);
                 }
 
             } catch (Exception e) {
@@ -62,7 +65,7 @@ public class PNGCheck {
                 moreData = false;
             }
         }
-        return null;
+        return message;
     }
 
     boolean verifyCRC(byte[] typeBytes, byte[] data, long crc) {
@@ -120,7 +123,7 @@ public class PNGCheck {
         }
     }
 
-    void printHiddenData(byte typeBytes[], byte data[], String message) {
+    void printHiddenData(byte typeBytes[], byte data[]) {
         message += new String(typeBytes);
         int ancillaryBit = (int) (typeBytes[0] >> 5) & 1;
         int privateBit = (int) (typeBytes[1] >> 5) & 1;
@@ -140,6 +143,16 @@ public class PNGCheck {
         } else {
             message += " Unsafe To copy";
         }
-        System.out.println(message);
+        message += "\n";
+        message += byteToString(data);
+        message += "\n";
+    }
+    
+    private String byteToString(byte data[]) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (byte b: data) {
+            stringBuilder.append(String.format("%02X", b));
+        }
+        return stringBuilder.toString();
     }
 }
