@@ -38,17 +38,17 @@ This tool also provides following additional options-
 
 #### Working Demo of Bit Plane Steganography and Colour Map
 
-1. Choose an image to open: ![Opening Image] (./screenshots/openingImage.png)
-2. Original Image: ![Selected Image] (./screenshots/openedImage.png)
-3. 6th bit plane (RGB) ![All Plane 6th bit] (./screenshots/allPlane6.png)
-4. Hidden image in 0th bit plane ![Hidden Image] (./screenshots/bpcsHidden.png)
-5. Hidden Flag visible when color model is changed ![Hidden Flag] (./screenshots/colourMap.png)
+1. Choose an image to open: ![Opening Image](./screenshots/openingImage.png)
+2. Original Image: ![Selected Image](./screenshots/openedImage.png)
+3. 6th bit plane (RGB) ![All Plane 6th bit](./screenshots/allPlane6.png)
+4. Hidden image in 0th bit plane ![Hidden Image](./screenshots/bpcsHidden.png)
+5. Hidden Flag visible when color model is changed ![Hidden Flag](./screenshots/colourMap.png)
 
 #### GUI Screenshots
 
-1. Hide Image: ![Hide Image] (./screenshots/hideImage.png)
-2. Altering Threshold: ![Altering Threshold] (./screenshots/threshold.png)
-3. Extracting Metadata: ![Extracting Metadata] (./screenshots/meta_data.png)
+1. Hide Image: ![Hide Image](./screenshots/hideImage.png)
+2. Altering Threshold: ![Altering Threshold](./screenshots/threshold.png)
+3. Extracting Metadata: ![Extracting Metadata](./screenshots/meta_data.png)
 
 #### How to start tool
 
