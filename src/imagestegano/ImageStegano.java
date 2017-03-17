@@ -27,8 +27,12 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import java.awt.Dimension;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import steganography.PNGCheck;
 
 /**
  *
@@ -471,6 +475,11 @@ public class ImageStegano extends javax.swing.JFrame {
         analyzeMenu.add(appendedDataMenuItem);
 
         pngCheckMenuItem.setText("PNG Check");
+        pngCheckMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pngCheckMenuItemActionPerformed(evt);
+            }
+        });
         analyzeMenu.add(pngCheckMenuItem);
 
         jMenuBar1.add(analyzeMenu);
@@ -825,6 +834,21 @@ public class ImageStegano extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_metaDataMenuItemActionPerformed
+
+    private void pngCheckMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pngCheckMenuItemActionPerformed
+        try {
+            InputStream inputStream = new FileInputStream(openedFile);
+            DataInputStream in = new DataInputStream(inputStream);
+            PNGCheck pngCheck = new PNGCheck();
+            if (pngCheck.isPNG(in)) {
+                pngCheck.getHiddenData(in);
+            } else {
+                alert("Not a png image");
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_pngCheckMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
