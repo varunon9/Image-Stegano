@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import steganography.AppendedData;
 import steganography.PNGCheck;
 
 /**
@@ -472,6 +473,11 @@ public class ImageStegano extends javax.swing.JFrame {
         analyzeMenu.add(metaDataMenuItem);
 
         appendedDataMenuItem.setText("Appended Data");
+        appendedDataMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                appendedDataMenuItemActionPerformed(evt);
+            }
+        });
         analyzeMenu.add(appendedDataMenuItem);
 
         pngCheckMenuItem.setText("PNG Check");
@@ -836,6 +842,9 @@ public class ImageStegano extends javax.swing.JFrame {
     }//GEN-LAST:event_metaDataMenuItemActionPerformed
 
     private void pngCheckMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pngCheckMenuItemActionPerformed
+        if (openedFile == null) {
+            return;
+        }
         try {
             InputStream inputStream = new FileInputStream(openedFile);
             DataInputStream in = new DataInputStream(inputStream);
@@ -850,10 +859,51 @@ public class ImageStegano extends javax.swing.JFrame {
             } else {
                 alert("Not a png image");
             }
+            in.close();
+            inputStream.close();
         } catch(Exception e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_pngCheckMenuItemActionPerformed
+
+    private void appendedDataMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appendedDataMenuItemActionPerformed
+        if (openedFile == null) {
+            return;
+        }
+        String imageName = openedFile.getName();
+        String imageType = imageUtility.getImageType(imageName);
+        AppendedData appendedData = new AppendedData();
+        try {
+            InputStream inputStream = new FileInputStream(openedFile);
+            DataInputStream in = new DataInputStream(inputStream);
+            if (imageType.equals("PNG")) {
+                String data = appendedData.getPNGAppendedData(in);
+                if (data.equals("")) {
+                    alert("No Appended data found");
+                } else {
+                    alert(data, "Appended Data");
+                }
+            } else if (imageType.equals("JPEG")) {
+                String data = appendedData.getJPEGAppendedData(in);
+                if (data.equals("")) {
+                    alert("No Appended data found");
+                } else {
+                    alert(data, "Appended Data");
+                }
+            } else if (imageType.equals("BMP")) {
+                String data = appendedData.getBMPAppendedData(in);
+                if (data.equals("")) {
+                    alert("No Appended data found");
+                } else {
+                    alert(data, "Appended Data");
+                }
+            }
+            in.close();
+            inputStream.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_appendedDataMenuItemActionPerformed
 
     /**
      * @param args the command line arguments

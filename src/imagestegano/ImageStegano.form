@@ -330,6 +330,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Appended Data"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="appendedDataMenuItemActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="pngCheckMenuItem">
               <Properties>

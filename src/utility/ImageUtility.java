@@ -142,4 +142,24 @@ public class ImageUtility {
         }
         return result;
     }
+    
+    public String getImageType(String name) {
+        String extension = name.substring(name.lastIndexOf('.') + 1);
+        extension = extension.toLowerCase();
+        String imageType = "";
+        if (extension.equals("png")) {
+            imageType = "PNG";
+        } else if (extension.equals("jpeg") || extension.equals("jpg")) {
+            imageType = "JPEG";
+        } else if (extension.equals("bmp")) {
+            imageType = "BMP";
+        } else if (extension.equals("gif")) {
+            imageType = "GIF";
+        } else if (extension.equals("tif")) {
+            imageType = "TIF";
+        } else if (extension.equals("tiff")) {
+            imageType = "TIFF";
+        }
+        return imageType;
+    }
 }
