@@ -506,6 +506,11 @@ public class ImageStegano extends javax.swing.JFrame {
 
         hideTextMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
         hideTextMenuItem.setText("Hide Text");
+        hideTextMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hideTextMenuItemActionPerformed(evt);
+            }
+        });
         hideDataMenu.add(hideTextMenuItem);
 
         jMenuBar1.add(hideDataMenu);
@@ -884,12 +889,13 @@ public class ImageStegano extends javax.swing.JFrame {
                     alert(data, "Appended Data");
                 }
             } else if (imageType.equals("JPEG")) {
-                String data = appendedData.getJPEGAppendedData(in);
+                // Not working 
+                /*String data = appendedData.getJPEGAppendedData(in);
                 if (data.equals("")) {
                     alert("No Appended data found");
                 } else {
                     alert(data, "Appended Data");
-                }
+                }*/
             } else if (imageType.equals("BMP")) {
                 String data = appendedData.getBMPAppendedData(in);
                 if (data.equals("")) {
@@ -904,6 +910,10 @@ public class ImageStegano extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_appendedDataMenuItemActionPerformed
+
+    private void hideTextMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideTextMenuItemActionPerformed
+        new HideText().setVisible(true);
+    }//GEN-LAST:event_hideTextMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
