@@ -5,17 +5,51 @@
  */
 package imagestegano;
 
+import java.awt.Component;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
+import java.io.File;
+import java.nio.file.Files;
+import javax.imageio.ImageIO;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import steganography.LSBEncoding;
+import steganography.SpiralEmbedding;
+import utility.ImageUtility;
+
 /**
  *
  * @author varun
  */
 public class HideText extends javax.swing.JFrame {
 
+    JFileChooser fileChooser;
+    File textFile;
+    BufferedImage coverImage;
+    ImageUtility imageUtility;
+    ColorModel coverImageColorModel;
+    
+    // an array to hold all bits checkboxes
+    JCheckBox bitsCheckBoxArray[] = new JCheckBox[8];
+    
     /**
      * Creates new form HideText
      */
     public HideText() {
         initComponents();
+        fileChooser = new JFileChooser();
+        imageUtility = new ImageUtility();
+        
+        bitsCheckBoxArray[0] = bit0CheckBox;
+        bitsCheckBoxArray[1] = bit1CheckBox;
+        bitsCheckBoxArray[2] = bit2CheckBox;
+        bitsCheckBoxArray[3] = bit3CheckBox;
+        bitsCheckBoxArray[4] = bit4CheckBox;
+        bitsCheckBoxArray[5] = bit5CheckBox;
+        bitsCheckBoxArray[6] = bit6CheckBox;
+        bitsCheckBoxArray[7] = bit7CheckBox;
     }
 
     /**
@@ -29,57 +63,45 @@ public class HideText extends javax.swing.JFrame {
 
         jLabel2 = new javax.swing.JLabel();
         chooseTextFileButton = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        textFileLabel = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        hideMessageTextArea = new javax.swing.JTextField();
+        secretMessageTextFiled = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         spiralEmbeddingCheckBox = new javax.swing.JCheckBox();
-        jPanel1 = new javax.swing.JPanel();
+        bitPlanesPanel = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        alpha7CheckBox = new javax.swing.JCheckBox();
-        alpha6CheckBox = new javax.swing.JCheckBox();
-        alpha5CheckBox = new javax.swing.JCheckBox();
-        alpha4CheckBox = new javax.swing.JCheckBox();
-        alpha3CheckBox = new javax.swing.JCheckBox();
-        alpha2CheckBox = new javax.swing.JCheckBox();
-        alpha1CheckBox = new javax.swing.JCheckBox();
-        alpha0CheckBox = new javax.swing.JCheckBox();
-        red7CheckBox = new javax.swing.JCheckBox();
-        red5CheckBox = new javax.swing.JCheckBox();
-        red6CheckBox = new javax.swing.JCheckBox();
-        red4CheckBox = new javax.swing.JCheckBox();
-        red3CheckBox = new javax.swing.JCheckBox();
-        red2CheckBox = new javax.swing.JCheckBox();
-        red1CheckBox = new javax.swing.JCheckBox();
-        red0CheckBox = new javax.swing.JCheckBox();
-        green7CheckBox = new javax.swing.JCheckBox();
-        green6CheckBox = new javax.swing.JCheckBox();
-        green5CheckBox = new javax.swing.JCheckBox();
-        green4CheckBox = new javax.swing.JCheckBox();
-        green3CheckBox = new javax.swing.JCheckBox();
-        green2CheckBox = new javax.swing.JCheckBox();
-        green1CheckBox = new javax.swing.JCheckBox();
-        green0CheckBox = new javax.swing.JCheckBox();
-        blue6CheckBox = new javax.swing.JCheckBox();
-        blue7CheckBox = new javax.swing.JCheckBox();
-        blue5CheckBox = new javax.swing.JCheckBox();
-        blue4CheckBox = new javax.swing.JCheckBox();
-        blue3CheckBox = new javax.swing.JCheckBox();
-        blue2CheckBox = new javax.swing.JCheckBox();
-        blue1CheckBox = new javax.swing.JCheckBox();
-        blue0CheckBox = new javax.swing.JCheckBox();
+        redCheckBox = new javax.swing.JCheckBox();
+        greenCheckBox = new javax.swing.JCheckBox();
+        blueCheckBox = new javax.swing.JCheckBox();
+        bit5CheckBox = new javax.swing.JCheckBox();
+        bit4CheckBox = new javax.swing.JCheckBox();
+        bit3CheckBox = new javax.swing.JCheckBox();
+        bit2CheckBox = new javax.swing.JCheckBox();
+        bit1CheckBox = new javax.swing.JCheckBox();
+        bit0CheckBox = new javax.swing.JCheckBox();
+        bit7CheckBox = new javax.swing.JCheckBox();
+        alphaCheckBox = new javax.swing.JCheckBox();
+        bit6CheckBox = new javax.swing.JCheckBox();
         hideTextButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        chooseCoverImageButton = new javax.swing.JButton();
+        coverImageLabel = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Hide Text");
 
         jLabel2.setText("Choose a text File");
 
         chooseTextFileButton.setText("Choose text file");
+        chooseTextFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseTextFileButtonActionPerformed(evt);
+            }
+        });
+
+        textFileLabel.setForeground(new java.awt.Color(140, 56, 104));
 
         jLabel4.setText("OR");
 
@@ -88,212 +110,120 @@ public class HideText extends javax.swing.JFrame {
         jLabel6.setText("Use Spiral Embedding: ");
 
         spiralEmbeddingCheckBox.setText("spiral Embedding");
+        spiralEmbeddingCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                spiralEmbeddingCheckBoxActionPerformed(evt);
+            }
+        });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Bit Planes"));
-        jPanel1.setToolTipText("Bit Planes");
+        bitPlanesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Bit Planes"));
+        bitPlanesPanel.setToolTipText("Bit Planes");
 
-        jLabel7.setText("Alpha");
+        jLabel7.setText("Select Planes:");
 
-        jLabel8.setText("Red");
+        jLabel10.setText("Select Bits:");
 
-        jLabel9.setText("Green");
+        redCheckBox.setText("Red");
 
-        jLabel10.setText("Blue");
+        greenCheckBox.setText("Green");
 
-        alpha7CheckBox.setText("7");
+        blueCheckBox.setText("Blue");
 
-        alpha6CheckBox.setText("6");
+        bit5CheckBox.setText("5");
 
-        alpha5CheckBox.setText("5");
+        bit4CheckBox.setText("4");
 
-        alpha4CheckBox.setText("4");
+        bit3CheckBox.setText("3");
 
-        alpha3CheckBox.setText("3");
+        bit2CheckBox.setText("2");
 
-        alpha2CheckBox.setText("2");
+        bit1CheckBox.setText("1");
 
-        alpha1CheckBox.setText("1");
+        bit0CheckBox.setText("0");
 
-        alpha0CheckBox.setText("0");
+        bit7CheckBox.setText("7");
 
-        red7CheckBox.setText("7");
+        alphaCheckBox.setText("Alpha");
 
-        red5CheckBox.setText("5");
+        bit6CheckBox.setText("6");
 
-        red6CheckBox.setText("6");
-
-        red4CheckBox.setText("4");
-
-        red3CheckBox.setText("3");
-
-        red2CheckBox.setText("2");
-
-        red1CheckBox.setText("1");
-
-        red0CheckBox.setText("0");
-
-        green7CheckBox.setText("7");
-
-        green6CheckBox.setText("6");
-
-        green5CheckBox.setText("5");
-
-        green4CheckBox.setText("4");
-
-        green3CheckBox.setText("3");
-
-        green2CheckBox.setText("2");
-
-        green1CheckBox.setText("1");
-
-        green0CheckBox.setText("0");
-
-        blue6CheckBox.setText("6");
-
-        blue7CheckBox.setText("7");
-
-        blue5CheckBox.setText("5");
-
-        blue4CheckBox.setText("4");
-
-        blue3CheckBox.setText("3");
-
-        blue2CheckBox.setText("2");
-
-        blue1CheckBox.setText("1");
-
-        blue0CheckBox.setText("0");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout bitPlanesPanelLayout = new javax.swing.GroupLayout(bitPlanesPanel);
+        bitPlanesPanel.setLayout(bitPlanesPanelLayout);
+        bitPlanesPanelLayout.setHorizontalGroup(
+            bitPlanesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bitPlanesPanelLayout.createSequentialGroup()
+                .addGroup(bitPlanesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9)
                     .addComponent(jLabel10))
-                .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(alpha7CheckBox)
-                    .addComponent(red7CheckBox)
-                    .addComponent(green7CheckBox)
-                    .addComponent(blue7CheckBox))
-                .addGap(32, 32, 32)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(alpha6CheckBox)
-                    .addComponent(red6CheckBox)
-                    .addComponent(green6CheckBox)
-                    .addComponent(blue6CheckBox))
-                .addGap(29, 29, 29)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(alpha5CheckBox)
-                    .addComponent(red5CheckBox)
-                    .addComponent(green5CheckBox)
-                    .addComponent(blue5CheckBox))
-                .addGap(27, 27, 27)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(alpha4CheckBox)
-                    .addComponent(red4CheckBox)
-                    .addComponent(green4CheckBox)
-                    .addComponent(blue4CheckBox))
-                .addGap(26, 26, 26)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(blue3CheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(blue2CheckBox))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(green3CheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(green2CheckBox))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(alpha3CheckBox)
-                        .addGap(26, 26, 26)
-                        .addComponent(alpha2CheckBox))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(red3CheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(red2CheckBox)))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(alpha1CheckBox)
+                .addGap(36, 36, 36)
+                .addGroup(bitPlanesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(bitPlanesPanelLayout.createSequentialGroup()
+                        .addComponent(bit7CheckBox)
+                        .addGap(30, 30, 30)
+                        .addComponent(bit6CheckBox)
                         .addGap(18, 18, 18)
-                        .addComponent(alpha0CheckBox))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(red1CheckBox)
+                        .addComponent(bit5CheckBox)
                         .addGap(18, 18, 18)
-                        .addComponent(red0CheckBox))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(green1CheckBox)
+                        .addComponent(bit4CheckBox)
                         .addGap(18, 18, 18)
-                        .addComponent(green0CheckBox))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(blue1CheckBox)
+                        .addComponent(bit3CheckBox)
                         .addGap(18, 18, 18)
-                        .addComponent(blue0CheckBox)))
+                        .addComponent(bit2CheckBox)
+                        .addGap(18, 18, 18)
+                        .addComponent(bit1CheckBox)
+                        .addGap(27, 27, 27)
+                        .addComponent(bit0CheckBox))
+                    .addGroup(bitPlanesPanelLayout.createSequentialGroup()
+                        .addComponent(alphaCheckBox)
+                        .addGap(35, 35, 35)
+                        .addComponent(redCheckBox)
+                        .addGap(39, 39, 39)
+                        .addComponent(greenCheckBox)
+                        .addGap(31, 31, 31)
+                        .addComponent(blueCheckBox)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        bitPlanesPanelLayout.setVerticalGroup(
+            bitPlanesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bitPlanesPanelLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(bitPlanesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(alpha7CheckBox)
-                    .addComponent(alpha6CheckBox)
-                    .addComponent(alpha5CheckBox)
-                    .addComponent(alpha4CheckBox)
-                    .addComponent(alpha3CheckBox)
-                    .addComponent(alpha2CheckBox)
-                    .addComponent(alpha1CheckBox)
-                    .addComponent(alpha0CheckBox))
-                .addGap(8, 8, 8)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(red7CheckBox)
-                    .addComponent(red6CheckBox)
-                    .addComponent(red5CheckBox)
-                    .addComponent(red4CheckBox)
-                    .addComponent(red3CheckBox)
-                    .addComponent(red2CheckBox)
-                    .addComponent(red1CheckBox)
-                    .addComponent(red0CheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(green7CheckBox)
-                        .addComponent(green6CheckBox)
-                        .addComponent(green5CheckBox)
-                        .addComponent(green4CheckBox)
-                        .addComponent(green3CheckBox)
-                        .addComponent(green2CheckBox)
-                        .addComponent(green1CheckBox)
-                        .addComponent(green0CheckBox)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel10))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(blue6CheckBox)
-                                .addComponent(blue7CheckBox))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(blue5CheckBox)
-                                .addComponent(blue4CheckBox)
-                                .addComponent(blue3CheckBox)
-                                .addComponent(blue2CheckBox)
-                                .addComponent(blue1CheckBox)
-                                .addComponent(blue0CheckBox)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                    .addComponent(alphaCheckBox)
+                    .addComponent(redCheckBox)
+                    .addComponent(greenCheckBox)
+                    .addComponent(blueCheckBox))
+                .addGap(18, 18, 18)
+                .addGroup(bitPlanesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(bit7CheckBox)
+                    .addComponent(bit6CheckBox)
+                    .addComponent(bit5CheckBox)
+                    .addComponent(bit4CheckBox)
+                    .addComponent(bit3CheckBox)
+                    .addComponent(bit2CheckBox)
+                    .addComponent(bit1CheckBox)
+                    .addComponent(bit0CheckBox))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         hideTextButton.setText("Hide Text");
+        hideTextButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hideTextButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Choose Cover Image:");
+
+        chooseCoverImageButton.setText("Choose Cover Image");
+        chooseCoverImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseCoverImageButtonActionPerformed(evt);
+            }
+        });
+
+        coverImageLabel.setForeground(new java.awt.Color(140, 56, 104));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -302,66 +232,198 @@ public class HideText extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(261, 261, 261)
-                        .addComponent(jLabel4)
-                        .addGap(69, 69, 69)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel5)
-                        .addGap(62, 62, 62)
-                        .addComponent(hideMessageTextArea))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(261, 261, 261)
+                                .addComponent(jLabel4))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel2)
+                                .addGap(73, 73, 73)
+                                .addComponent(chooseTextFileButton)
+                                .addGap(18, 18, 18)
+                                .addComponent(textFileLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)))
+                        .addGap(20, 20, 20))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(73, 73, 73)
-                                .addComponent(chooseTextFileButton))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel6))
+                                .addGap(36, 36, 36)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(secretMessageTextFiled)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(spiralEmbeddingCheckBox)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(chooseCoverImageButton)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(coverImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(47, 47, 47)
-                                .addComponent(spiralEmbeddingCheckBox)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(234, 234, 234)
+                                .addComponent(hideTextButton))
+                            .addComponent(bitPlanesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(246, 246, 246)
-                .addComponent(hideTextButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(chooseTextFileButton))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(chooseTextFileButton))
                         .addGap(42, 42, 42)
                         .addComponent(jLabel5))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(9, 9, 9)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(37, 37, 37)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(textFileLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(hideMessageTextArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
+                        .addComponent(secretMessageTextFiled, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(coverImageLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(chooseCoverImageButton)
+                        .addComponent(jLabel1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(spiralEmbeddingCheckBox))
-                .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(14, 14, 14)
+                .addComponent(bitPlanesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
                 .addComponent(hideTextButton)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addGap(33, 33, 33))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void chooseTextFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseTextFileButtonActionPerformed
+        fileChooser.setDialogTitle("Choose a plain Text File");
+        TextFileFilter filter = new TextFileFilter();
+        fileChooser.setFileFilter(filter);
+        int returnVal = fileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            textFile = fileChooser.getSelectedFile();
+            String name = textFile.getName();
+            textFileLabel.setText(name);
+        } 
+    }//GEN-LAST:event_chooseTextFileButtonActionPerformed
+
+    private void chooseCoverImageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseCoverImageButtonActionPerformed
+        fileChooser.setDialogTitle("Select an image");
+        ImageFileFilter imageFilter = new ImageFileFilter();
+        int returnVal = fileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File openedFile = fileChooser.getSelectedFile();
+            String name = openedFile.getName();
+            try {
+                if (imageFilter.isPNGOrBMPImage(name)) {
+                    coverImage = ImageIO.read(openedFile);
+
+                    // converting original image to suitable type
+                    BufferedImage currentImage
+                            = imageUtility.convertImage(coverImage);
+                    if (currentImage != null) {
+                        coverImage = currentImage;
+                    }
+                    
+                    coverImageColorModel = coverImage.getColorModel();
+                    resetBitPlanes(name, coverImageColorModel);
+                } else {
+                    alert("Please select only .png or .bmp image");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_chooseCoverImageButtonActionPerformed
+
+    private void hideTextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideTextButtonActionPerformed
+        if (coverImage == null) {
+            alert("No cover Image selected");
+            return;
+        }
+        String secretMessage = "";
+        if (textFile == null) {
+            secretMessage = secretMessageTextFiled.getText();
+            if (secretMessage.equals("")) {
+                alert("Enter secret message to hide");
+                return;
+            }
+        } else {
+            try {
+                byte[] encoded = Files.readAllBytes(textFile.toPath());
+                secretMessage = new String(encoded);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (spiralEmbeddingCheckBox.isSelected()) {
+            new SpiralEmbedding().embed(coverImage, secretMessage);
+        } else {
+            LSBEncoding lsbEncoding = new LSBEncoding();
+            int bitArray[] = new int[8];
+            for (int i = 0; i < 8; i++) {
+                if (bitsCheckBoxArray[i].isSelected()) {
+                    bitArray[i] = 1;
+                } else {
+                    bitArray[i] = 0;
+                }
+            }
+            if (coverImageColorModel instanceof IndexColorModel) {
+                lsbEncoding.encodeText(coverImage, secretMessage, bitArray);
+            } else {
+                // 0: alpha, 1: red, 2: green, 3: blue
+                int bitPlaneArray[] = new int[4];
+                if (alphaCheckBox.isEnabled() && alphaCheckBox.isSelected()) {
+                    bitPlaneArray[0] = 1;
+                } else {
+                    bitPlaneArray[0] = 0;
+                }
+                if (redCheckBox.isSelected()) {
+                    bitPlaneArray[1] = 1;
+                } else {
+                    bitPlaneArray[1] = 0;
+                }
+                if (greenCheckBox.isSelected()) {
+                    bitPlaneArray[2] = 1;
+                } else {
+                    bitPlaneArray[2] = 0;
+                }
+                if (blueCheckBox.isSelected()) {
+                    bitPlaneArray[3] = 1;
+                } else {
+                    bitPlaneArray[3] = 0;
+                }
+                lsbEncoding.encodeText(coverImage, secretMessage, 
+                        bitPlaneArray, bitArray);
+            }
+        }
+        
+    }//GEN-LAST:event_hideTextButtonActionPerformed
+
+    private void spiralEmbeddingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spiralEmbeddingCheckBoxActionPerformed
+        Component components[] = bitPlanesPanel.getComponents();
+        if (spiralEmbeddingCheckBox.isSelected()) {
+            for (Component component: components) {
+                component.setEnabled(false);
+            }
+        } else {
+            for (Component component: components) {
+                component.setEnabled(true);
+            }
+        }
+    }//GEN-LAST:event_spiralEmbeddingCheckBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -397,53 +459,61 @@ public class HideText extends javax.swing.JFrame {
             }
         });
     }
+    
+    private void alert(String message) {
+        JOptionPane.showMessageDialog(null, message);
+    }
+    
+    private void resetBitPlanes(String name, ColorModel colorModel) {
+        int pixelSize = colorModel.getPixelSize();
+        boolean alphaChannel = colorModel.hasAlpha();
+        coverImageLabel.setText(name + ", Color depth: "
+                + pixelSize + ", Alpha channel: " + alphaChannel);
+        if (colorModel instanceof IndexColorModel) {
+            alphaCheckBox.setEnabled(false);
+            redCheckBox.setEnabled(false);
+            greenCheckBox.setEnabled(false);
+            blueCheckBox.setEnabled(false);
+        } else {
+            redCheckBox.setEnabled(true);
+            greenCheckBox.setEnabled(true);
+            blueCheckBox.setEnabled(true);
+            if (alphaChannel) {
+                alphaCheckBox.setEnabled(true);
+            } else {
+                alphaCheckBox.setEnabled(false);
+            }
+        }
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox alpha0CheckBox;
-    private javax.swing.JCheckBox alpha1CheckBox;
-    private javax.swing.JCheckBox alpha2CheckBox;
-    private javax.swing.JCheckBox alpha3CheckBox;
-    private javax.swing.JCheckBox alpha4CheckBox;
-    private javax.swing.JCheckBox alpha5CheckBox;
-    private javax.swing.JCheckBox alpha6CheckBox;
-    private javax.swing.JCheckBox alpha7CheckBox;
-    private javax.swing.JCheckBox blue0CheckBox;
-    private javax.swing.JCheckBox blue1CheckBox;
-    private javax.swing.JCheckBox blue2CheckBox;
-    private javax.swing.JCheckBox blue3CheckBox;
-    private javax.swing.JCheckBox blue4CheckBox;
-    private javax.swing.JCheckBox blue5CheckBox;
-    private javax.swing.JCheckBox blue6CheckBox;
-    private javax.swing.JCheckBox blue7CheckBox;
+    private javax.swing.JCheckBox alphaCheckBox;
+    private javax.swing.JCheckBox bit0CheckBox;
+    private javax.swing.JCheckBox bit1CheckBox;
+    private javax.swing.JCheckBox bit2CheckBox;
+    private javax.swing.JCheckBox bit3CheckBox;
+    private javax.swing.JCheckBox bit4CheckBox;
+    private javax.swing.JCheckBox bit5CheckBox;
+    private javax.swing.JCheckBox bit6CheckBox;
+    private javax.swing.JCheckBox bit7CheckBox;
+    private javax.swing.JPanel bitPlanesPanel;
+    private javax.swing.JCheckBox blueCheckBox;
+    private javax.swing.JButton chooseCoverImageButton;
     private javax.swing.JButton chooseTextFileButton;
-    private javax.swing.JCheckBox green0CheckBox;
-    private javax.swing.JCheckBox green1CheckBox;
-    private javax.swing.JCheckBox green2CheckBox;
-    private javax.swing.JCheckBox green3CheckBox;
-    private javax.swing.JCheckBox green4CheckBox;
-    private javax.swing.JCheckBox green5CheckBox;
-    private javax.swing.JCheckBox green6CheckBox;
-    private javax.swing.JCheckBox green7CheckBox;
-    private javax.swing.JTextField hideMessageTextArea;
+    private javax.swing.JLabel coverImageLabel;
+    private javax.swing.JCheckBox greenCheckBox;
     private javax.swing.JButton hideTextButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JCheckBox red0CheckBox;
-    private javax.swing.JCheckBox red1CheckBox;
-    private javax.swing.JCheckBox red2CheckBox;
-    private javax.swing.JCheckBox red3CheckBox;
-    private javax.swing.JCheckBox red4CheckBox;
-    private javax.swing.JCheckBox red5CheckBox;
-    private javax.swing.JCheckBox red6CheckBox;
-    private javax.swing.JCheckBox red7CheckBox;
+    private javax.swing.JCheckBox redCheckBox;
+    private javax.swing.JTextField secretMessageTextFiled;
     private javax.swing.JCheckBox spiralEmbeddingCheckBox;
+    private javax.swing.JLabel textFileLabel;
     // End of variables declaration//GEN-END:variables
 }
