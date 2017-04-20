@@ -30,6 +30,7 @@ public class HideText extends javax.swing.JFrame {
     BufferedImage coverImage;
     ImageUtility imageUtility;
     ColorModel coverImageColorModel;
+    File openedFile;
     
     // an array to hold all bits checkboxes
     JCheckBox bitsCheckBoxArray[] = new JCheckBox[8];
@@ -324,7 +325,7 @@ public class HideText extends javax.swing.JFrame {
         ImageFileFilter imageFilter = new ImageFileFilter();
         int returnVal = fileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File openedFile = fileChooser.getSelectedFile();
+            openedFile = fileChooser.getSelectedFile();
             String name = openedFile.getName();
             try {
                 if (imageFilter.isPNGOrBMPImage(name)) {
@@ -409,6 +410,7 @@ public class HideText extends javax.swing.JFrame {
                         bitPlaneArray, bitArray);
             }
         }
+        saveImage();
         
     }//GEN-LAST:event_hideTextButtonActionPerformed
 
@@ -484,6 +486,30 @@ public class HideText extends javax.swing.JFrame {
                 alphaCheckBox.setEnabled(false);
             }
         }
+    }
+    
+    private void saveImage() {
+        if (coverImage == null) {
+            return;
+        }
+        fileChooser.setDialogTitle("Choose a location");
+        String oldFileName = openedFile.getName();
+        String newFileName = imageUtility.getNewFileName(oldFileName);
+        String path = openedFile.getAbsolutePath();
+        path = path.substring(0, path.lastIndexOf(File.separator) + 1);
+        File file = new File(path + newFileName);
+        fileChooser.setSelectedFile(file);
+        int returnVal = fileChooser.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            file = fileChooser.getSelectedFile();
+            String name = file.getName();
+            if (imageUtility.isImage(name)) {
+                imageUtility.saveImage(coverImage, file);
+            } else {
+                alert("Invalid file name");
+            }
+
+        } 
     }
     
 
