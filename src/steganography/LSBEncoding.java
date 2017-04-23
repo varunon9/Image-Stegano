@@ -5,7 +5,6 @@
  */
 package steganography;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import utility.ImageUtility;
 
@@ -20,159 +19,28 @@ public class LSBEncoding {
     public LSBEncoding() {
         imageUtility = new ImageUtility();
     }
-    // cover image has indexColorModel
+    
     public void encodeText(BufferedImage coverImage, 
             String message, int bitArray[]) {
         byte image[] = imageUtility.getByteData(coverImage);
         byte payload[] = message.getBytes();
         int offset = 0;
         int imageLength = image.length;
-        
-        // loop will terminate when either payload or image data will be over
-        for (int i = 0; i < payload.length && offset < imageLength; i++, offset++) {
-            // one byte payload message
-            int byteData = payload[i];
-            
-            // j is index of bitArray i.e which bit to be modified in image[offset]
-            int j = 0;
-            
-            // loop will run 8 times: for each bit in byteData
-            int shiftBit = 7;
-            while (shiftBit >= 0 && offset < imageLength) {
-                // extarcting bit from byteData (each byte payload message)
-                int singleBit = (byteData >>> shiftBit) & 1;
-                while (true) {
-                    if (j > 7) {
-                        offset++;
-                        j = 0;
-                        break;
-                    }
-                    if (bitArray[j] == 1) {
-                        int mask = returnMask(j);
-                        if (singleBit == 0) {
-                            image[offset]
-                                    = (byte) ((image[offset] & mask));
-                        } else {
-                            image[offset]
-                                    = (byte) ((image[offset] & mask) | ~mask);
-                        }System.out.println(image[offset]);
-                        j++;
-                        shiftBit--;
-                        break;
-                    }
-                    j++;
-                }
-            }
-        }
-    }
-    
-    // cover image has RGB ColorModel
-    public void encodeText(BufferedImage coverImage, String message, 
-            int bitPlaneArray[], int bitArray[]) {
-        byte image[] = imageUtility.getByteData(coverImage);
-        byte payload[] = message.getBytes();
         boolean data[] = convertToBits(payload);
         int dataLength = data.length;
-        
-        // index to track data
-        int index = 0;
-        
-        int height = coverImage.getHeight();
-        int width = coverImage.getWidth();
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (index >= dataLength) {
-                    // to break from outer loop
-                    i = width;
-                    break;
-                }
-                // ARGB format
-                int pixel = coverImage.getRGB(i, j);
-                System.out.println(pixel);
-                int alpha = (pixel >> 24) & 0xff;
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                int blue = (pixel >> 0) & 0xff;
-                
-                // Alpha Plane
-                if (bitPlaneArray[0] == 1) {
-                    for (int k = 0; k < bitArray.length; k++) {
-                        if (bitArray[k] == 1) {
-                            int mask = returnMask(k);
-                            alpha = alpha & mask;
-                            if (data[index++] == true) {
-                                alpha = alpha | ~mask;
-                            }
-                            if (index >= dataLength) {
-                                j = height;
-                                i = width;
-                                break;
-                            }
-                        } 
+        int dataOverFlag = 0;
+        for (int i = 0; i < imageLength && dataOverFlag == 0; i++) {
+            for (int j = 7; j >= 0  && dataOverFlag == 0; j--) {
+                if (bitArray[j] == 1) {
+                    int mask = returnMask(j);
+                    image[i] = (byte) ((image[i] & mask));
+                    if (data[offset++]) {
+                        image[i] = (byte) (image[i] | ~mask);
+                    }
+                    if (offset >= dataLength) {
+                        dataOverFlag = 1;
                     }
                 }
-                
-                // Red Plane
-                if (bitPlaneArray[0] == 1) {
-                    for (int k = 0; k < bitArray.length; k++) {
-                        if (bitArray[k] == 1) {
-                            int mask = returnMask(k);
-                            red = red & mask;
-                            if (data[index++] == true) {
-                                red = red | ~mask;
-                            }
-                            if (index >= dataLength) {
-                                j = height;
-                                i = width;
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                // Green Plane
-                if (bitPlaneArray[0] == 1) {
-                    for (int k = 0; k < bitArray.length; k++) {
-                        if (bitArray[k] == 1) {
-                            int mask = returnMask(k);
-                            green = green & mask;
-                            if (data[index++] == true) {
-                                green = green | ~mask;
-                            }
-                            if (index >= dataLength) {
-                                j = height;
-                                i = width;
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                // Blue Plane
-                if (bitPlaneArray[0] == 1) {
-                    for (int k = 0; k < bitArray.length; k++) {
-                        if (bitArray[k] == 1) {
-                            int mask = returnMask(k);
-                            blue = blue & mask;
-                            if (data[index++] == true) {
-                                blue = blue | ~mask;
-                            }
-                            if (index >= dataLength) {
-                                j = height;
-                                i = width;
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                alpha = alpha << 24;
-                red = red << 16;
-                green = green << 8;
-                blue = blue << 0;
-                pixel = alpha | red | green | blue;
-                coverImage.setRGB(i, j, pixel);
-                System.out.println(pixel);
             }
         }
     }
@@ -213,12 +81,59 @@ public class LSBEncoding {
         int offset = 0;
         for (byte b: payload) {
             for (int i = 7; i >= 0; i--) {
-                int singleBit = (b >> i) & 0x1;
+                int singleBit = (b >> i) & 1;
                 if (singleBit == 1) {
                     result[offset++] = true;
+                } else {
+                    result[offset++] = false;
                 }
             }
         }
         return result;
+    }
+    
+    public String decodeText(BufferedImage coverImage, int bitArray[]) {
+        byte image[] = imageUtility.getByteData(coverImage);
+        int offset = 0;
+        int imageLength = image.length;
+        
+        // counting how many bits are modified per byte
+        int count = 0;
+        for (int i = 0; i < bitArray.length; i++) {
+            if (bitArray[i] == 1) {
+                count++;
+            }
+        }
+        
+        boolean data[] = new boolean[imageLength * count];
+        for (int i = 0; i < imageLength; i++) {
+            for (int j = 7; j >= 0; j--) {
+                if (bitArray[j] == 1) {
+                    int singleBit = (image[i] >> j) & 1;
+                    if (singleBit == 1) {
+                        data[offset++] = true;
+                    } else {
+                        data[offset++] = false;
+                    }
+                }
+            }
+        }
+        
+        // converting boolean array to byte array
+        int secretMessageLength = (imageLength * count) / 8;
+        byte secretMessage[] = new byte[secretMessageLength];
+        for (int i = 0; i < secretMessageLength; i++) {
+            for (int bit = 0; bit < 8; bit++) {
+                if (data[i * 8 + bit]) {
+                    secretMessage[i] |= (128 >> bit);
+                }
+            }
+        }
+        try {
+            return new String(secretMessage, "ASCII");
+        } catch(Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

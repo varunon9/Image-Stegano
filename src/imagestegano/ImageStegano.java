@@ -176,6 +176,7 @@ public class ImageStegano extends javax.swing.JFrame {
         metaDataMenuItem = new javax.swing.JMenuItem();
         appendedDataMenuItem = new javax.swing.JMenuItem();
         pngCheckMenuItem = new javax.swing.JMenuItem();
+        extractTextMenuItem = new javax.swing.JMenuItem();
         thresholdMenu = new javax.swing.JMenu();
         hideDataMenu = new javax.swing.JMenu();
         hideImageMenuItem = new javax.swing.JMenuItem();
@@ -487,6 +488,14 @@ public class ImageStegano extends javax.swing.JFrame {
             }
         });
         analyzeMenu.add(pngCheckMenuItem);
+
+        extractTextMenuItem.setText("Extract Text");
+        extractTextMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                extractTextMenuItemActionPerformed(evt);
+            }
+        });
+        analyzeMenu.add(extractTextMenuItem);
 
         jMenuBar1.add(analyzeMenu);
 
@@ -915,6 +924,10 @@ public class ImageStegano extends javax.swing.JFrame {
         new HideText().setVisible(true);
     }//GEN-LAST:event_hideTextMenuItemActionPerformed
 
+    private void extractTextMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_extractTextMenuItemActionPerformed
+        new ExtractText().setVisible(true);
+    }//GEN-LAST:event_extractTextMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1135,6 +1148,7 @@ public class ImageStegano extends javax.swing.JFrame {
     private javax.swing.JLabel encryptionLabel;
     private javax.swing.JTextField encryptionTextField;
     private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenuItem extractTextMenuItem;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
