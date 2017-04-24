@@ -8,7 +8,6 @@ package imagestegano;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.nio.file.Files;
 import javax.imageio.ImageIO;
@@ -16,7 +15,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import steganography.LSBEncoding;
-import steganography.SpiralEmbedding;
 import utility.ImageUtility;
 
 /**
@@ -68,8 +66,6 @@ public class HideText extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         secretMessageTextFiled = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        spiralEmbeddingCheckBox = new javax.swing.JCheckBox();
         bitPlanesPanel = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         bit5CheckBox = new javax.swing.JCheckBox();
@@ -102,15 +98,6 @@ public class HideText extends javax.swing.JFrame {
         jLabel4.setText("OR");
 
         jLabel5.setText("Enter text to hide: ");
-
-        jLabel6.setText("Use Spiral Embedding: ");
-
-        spiralEmbeddingCheckBox.setText("spiral Embedding");
-        spiralEmbeddingCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                spiralEmbeddingCheckBoxActionPerformed(evt);
-            }
-        });
 
         bitPlanesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Modify Bits"));
         bitPlanesPanel.setToolTipText("Modify Bits");
@@ -217,14 +204,10 @@ public class HideText extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel5)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel6))
-                                .addGap(36, 36, 36)
+                                    .addComponent(jLabel1))
+                                .addGap(50, 50, 50)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(secretMessageTextFiled)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(spiralEmbeddingCheckBox)
-                                        .addGap(0, 0, Short.MAX_VALUE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(chooseCoverImageButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -232,7 +215,7 @@ public class HideText extends javax.swing.JFrame {
                             .addComponent(bitPlanesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(247, 247, 247)
+                .addGap(248, 248, 248)
                 .addComponent(hideTextButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -261,18 +244,12 @@ public class HideText extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(chooseCoverImageButton)
                         .addComponent(jLabel1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(spiralEmbeddingCheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(bitPlanesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(hideTextButton)
                 .addContainerGap())
         );
-
-        bitPlanesPanel.getAccessibleContext().setAccessibleName("Modify Bits");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -342,36 +319,19 @@ public class HideText extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
-        if (spiralEmbeddingCheckBox.isSelected()) {
-            new SpiralEmbedding().embed(coverImage, secretMessage);
-        } else {
-            LSBEncoding lsbEncoding = new LSBEncoding();
-            int bitArray[] = new int[8];
-            for (int i = 0; i < 8; i++) {
-                if (bitsCheckBoxArray[i].isSelected()) {
-                    bitArray[i] = 1;
-                } else {
-                    bitArray[i] = 0;
-                }
+        LSBEncoding lsbEncoding = new LSBEncoding();
+        int bitArray[] = new int[8];
+        for (int i = 0; i < 8; i++) {
+            if (bitsCheckBoxArray[i].isSelected()) {
+                bitArray[i] = 1;
+            } else {
+                bitArray[i] = 0;
             }
-            lsbEncoding.encodeText(coverImage, secretMessage, bitArray);
         }
+        lsbEncoding.encodeText(coverImage, secretMessage, bitArray);
         saveImage();
         
     }//GEN-LAST:event_hideTextButtonActionPerformed
-
-    private void spiralEmbeddingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spiralEmbeddingCheckBoxActionPerformed
-        Component components[] = bitPlanesPanel.getComponents();
-        if (spiralEmbeddingCheckBox.isSelected()) {
-            for (Component component: components) {
-                component.setEnabled(false);
-            }
-        } else {
-            for (Component component: components) {
-                component.setEnabled(true);
-            }
-        }
-    }//GEN-LAST:event_spiralEmbeddingCheckBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -456,9 +416,7 @@ public class HideText extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField secretMessageTextFiled;
-    private javax.swing.JCheckBox spiralEmbeddingCheckBox;
     private javax.swing.JLabel textFileLabel;
     // End of variables declaration//GEN-END:variables
 }

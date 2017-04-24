@@ -69,8 +69,6 @@ public class ExtractText extends javax.swing.JFrame {
         bit2CheckBox = new javax.swing.JCheckBox();
         bit1CheckBox = new javax.swing.JCheckBox();
         bit0CheckBox = new javax.swing.JCheckBox();
-        jLabel2 = new javax.swing.JLabel();
-        spiralEmbeddingCheckBox = new javax.swing.JCheckBox();
         chooseCoverImageButton = new javax.swing.JButton();
         extractTextButton = new javax.swing.JButton();
         outputTextArea = new java.awt.TextArea();
@@ -137,15 +135,6 @@ public class ExtractText extends javax.swing.JFrame {
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
-        jLabel2.setText("Use Spiral Embedding:");
-
-        spiralEmbeddingCheckBox.setText("Spiral Embedding");
-        spiralEmbeddingCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                spiralEmbeddingCheckBoxActionPerformed(evt);
-            }
-        });
-
         chooseCoverImageButton.setText("Choose Cover Image");
         chooseCoverImageButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -160,6 +149,8 @@ public class ExtractText extends javax.swing.JFrame {
             }
         });
 
+        coverImageLabel.setForeground(new java.awt.Color(140, 56, 104));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -171,24 +162,17 @@ public class ExtractText extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(modifyBitsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel1))
-                                .addGap(38, 38, 38)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(spiralEmbeddingCheckBox)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(chooseCoverImageButton)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(coverImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(186, 186, 186)
-                        .addComponent(extractTextButton)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                                .addComponent(jLabel1)
+                                .addGap(49, 49, 49)
+                                .addComponent(chooseCoverImageButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(coverImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addComponent(outputTextArea, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(185, 185, 185)
+                .addComponent(extractTextButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -201,13 +185,10 @@ public class ExtractText extends javax.swing.JFrame {
                     .addComponent(chooseCoverImageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(coverImageLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(spiralEmbeddingCheckBox))
-                .addGap(18, 18, 18)
                 .addComponent(modifyBitsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(extractTextButton))
+                .addGap(18, 18, 18)
+                .addComponent(extractTextButton)
+                .addGap(22, 22, 22))
         );
 
         outputTextArea.getAccessibleContext().setAccessibleName("");
@@ -247,38 +228,22 @@ public class ExtractText extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_chooseCoverImageButtonActionPerformed
 
-    private void spiralEmbeddingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spiralEmbeddingCheckBoxActionPerformed
-        Component components[] = modifyBitsPanel.getComponents();
-        if (spiralEmbeddingCheckBox.isSelected()) {
-            for (Component component : components) {
-                component.setEnabled(false);
-            }
-        } else {
-            for (Component component : components) {
-                component.setEnabled(true);
-            }
-        }
-    }//GEN-LAST:event_spiralEmbeddingCheckBoxActionPerformed
-
     private void extractTextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_extractTextButtonActionPerformed
         if (coverImage == null) {
             alert("No cover Image selected");
             return;
         }
-        if (spiralEmbeddingCheckBox.isSelected()) {
-        } else {
-            LSBEncoding lsbEncoding = new LSBEncoding();
-            int bitArray[] = new int[8];
-            for (int i = 0; i < 8; i++) {
-                if (bitsCheckBoxArray[i].isSelected()) {
-                    bitArray[i] = 1;
-                } else {
-                    bitArray[i] = 0;
-                }
+        LSBEncoding lsbEncoding = new LSBEncoding();
+        int bitArray[] = new int[8];
+        for (int i = 0; i < 8; i++) {
+            if (bitsCheckBoxArray[i].isSelected()) {
+                bitArray[i] = 1;
+            } else {
+                bitArray[i] = 0;
             }
-            String message = lsbEncoding.decodeText(coverImage, bitArray);
-            outputTextArea.setText(message);
         }
+        String message = lsbEncoding.decodeText(coverImage, bitArray);
+        outputTextArea.setText(message);
     }//GEN-LAST:event_extractTextButtonActionPerformed
 
     /**
@@ -333,9 +298,7 @@ public class ExtractText extends javax.swing.JFrame {
     private javax.swing.JLabel coverImageLabel;
     private javax.swing.JButton extractTextButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel modifyBitsPanel;
     private java.awt.TextArea outputTextArea;
-    private javax.swing.JCheckBox spiralEmbeddingCheckBox;
     // End of variables declaration//GEN-END:variables
 }
