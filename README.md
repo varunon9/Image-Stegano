@@ -22,11 +22,10 @@ popular because of their frequency on the Internet.
 
 Image-Stegano implements following steganographic methods-
 
-1. 1 bit, 2 bits, 3 bits and 4 bits LSB for text data with randomization (pending)
+1. 1 bit, 2 bits, 3 bits and 4 bits LSB (hiding as well as extraction)
 2. 24 bits plane (Red, Green, Blue) and 32 bits plane (Red, Green, Blue, Alpha) analysis of image 
-3. Bitwise XOR Implementation between LSB and image payload
-4. Compression and Encryption of text payload (pending)
-5. Spiral Embedding (pending)
+3. Bitwise XOR Implementation between LSB and payload
+4. Steganography Based on File Format
 
 This tool also provides following additional options-
 
@@ -34,7 +33,8 @@ This tool also provides following additional options-
 2. Grayscale analysis of image
 3. Altering threshold of image (Histogram)
 4. Providing metadata about the image
-5. Chunks analysis of .png images (pending)
+5. Chunks analysis of .png images
+6. Extraction of appended Data (.PNG and .BMP files)
 
 #### Working Demo of Bit Plane Steganography and Colour Map
 
@@ -63,5 +63,5 @@ This tool also provides following additional options-
 
 ### How to deploy the project
 
-This tool is being developed in NetBeans IDE. You can import project form zip file.
+This tool is being developed in NetBeans IDE. Import(or open) project in netbeans and add two jar files as libraries from libraries folder <https://github.com/varunon9/Image-Stegano/tree/master/libraries>.
 
